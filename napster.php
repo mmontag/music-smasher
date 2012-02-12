@@ -2,7 +2,7 @@
 
 // Napster API session key cache
 
-$fname = "boink.txt";
+$fname = "napster.txt";
 $expiration = 1800; //seconds
 $now = time();
 $apikey = "UAxDdnVgwvbeMpsPBAXh";

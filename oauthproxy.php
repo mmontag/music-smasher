@@ -9,8 +9,8 @@ if(!$_GET['query']) die("Invalid query");
 
 switch ($_GET['api']) {
 	case "rdio":
-		$key = $keys.rdio.key;
-		$secret = $keys.rdio.secret;
+		$key = $keys['rdio']['key'];
+		$secret = $keys['rdio']['secret'];
 		$endpoint = "http://api.rdio.com/1/";
 		$dictionary = array(
 			"method"=>"search", 
@@ -22,8 +22,7 @@ switch ($_GET['api']) {
 		break;
 		
 	case "soundcloud":
-		$key = $keys.soundcloud.key;
-		$secret = $keys.soundcloud.secret;
+		// Nevermind, implementing soundcloud with JSONP for now
 		break;
 		
 	case "some_other_api...":

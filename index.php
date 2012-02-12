@@ -50,56 +50,8 @@ Notes: Napster API search is disabled as of December 1, 2011. Napster has been a
 </form>
 </div><br>
 
-<div class="col" id="spotify">
-<h2>
-	<img src="images/spotify.png" class="logo">
-	Spotify <span class="num-results"></span></h2>
-	<div class="loading"></div>
-	<div class="results"></div>
-</div>
+<div id="services"></div>
 
-<div class="col" id="rdio">
-	<h2>
-	<img src="images/rdio.jpg" class="logo">
-	Rdio <span class="num-results"></span></h2>
-	<div class="loading"></div>
-	<div class="results"></div>
-</div>
-
-<div class="col" id="grooveshark">
-<h2>
-	<img src="images/grooveshark.png" class="logo">
-	Grooveshark <span class="num-results"></span></h2>
-	<div class="loading"></div>
-	<div class="results"></div>
-</div>
-<!--
-<div class="col" id="napster">
-	<h2>
-	<img src="images/napster.png" class="logo">
-	Napster <span class="num-results"></span></h2>
-	<div class="loading"></div>
-	<div class="results"></div>
-</div>
-
-<div class="col" id="rhapsody">
-	<h2>
-	<img src="images/rhapsody.gif" class="logo">
-	Rhapsody <span class="num-results"></span></h2>
-	Coming soon (maybe)
-	<div class="loading"></div>
-	<div class="results"></div>
-</div>
-
-<div class="col" id="bandcamp">
-	<h2>
-	<img src="images/bandcamp.png" class="logo">
-	Bandcamp</h2>
-	Coming soon
-	<div class="loading"></div>
-	<div class="results"></div>
-</div>
--->
 <div class="footer">
 	by <a href="http://www.mattmontag.com">Matt Montag</a>
 </div>

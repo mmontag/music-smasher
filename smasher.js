@@ -1,17 +1,15 @@
-var napsterSessionKey = '';
-
 // Do this when the page loads
 $(document).ready(function() {
 	
-	var spotify = new iAPI('spotify');
+	var spotify = new iAPI('spotify', 'Spotify');
 
 		spotify.numResults = function(){
 			return this.items.length;
-		}
+		};
 		
 		spotify.endpoint = function() {
 			return('http://ws.spotify.com/search/1/track.json?q=' + this.query);
-		}
+		};
 		
 		spotify.parse = function() {
 			for(key in this.data.tracks){ 
@@ -28,39 +26,34 @@ $(document).ready(function() {
 					this.data.tracks[key].name + '</a><br><span class="album">'+ 
 					this.data.tracks[key].album.name+'</span></li>');
 			}
-		}
-			
-	var napster = new iAPI('napster');
-
-		napster.endpoint = function() {
-			url = 'http://connect.napster.com/rest/1.2/search/tracks?searchTerm='+this.query+'&format=json&countryCode=US&maxResults=100&sessionKey='+napsterSessionKey;
-			console.log("napster query: " + url);
-			return('blabber.php?mode=native&url='+escape(url));
-		}
-
-		napster.napsterKey = function () {
-			console.log("Fetching Napster session key");
-			$.get('bonk.php', function(data) {
-				napsterSessionKey = data;
-			});
-		}
+		};
+	
+	var mog = new iAPI('mog', 'MOG');
+	
+		mog.endpoint = function() {
+			return('https://search.mog.com/mfastsearch?nq=' + this.query + '&ntn=10');
+		};
 		
-		napster.parse = function() {
-			this.data = this.data.searchResults.track;
-			for(key in this.data){ 
-				this.items.push('<li>' + 
-					this.data[key].artistName + ' - ' + 
-					this.data[key].trackName + '<br><span class="album">'+ 
-					this.data[key].albumName +'</span></li>');
+	var soundcloud = new iAPI('soundcloud', 'SoundCloud');
+	
+		soundcloud.endpoint = function() {
+			return('http://api.soundcloud.com/tracks.json?q='+this.query+'&client_id=f7def983532e3e44229d757cdab43cbe');
+		};
+		
+		soundcloud.parse = function() {
+			for(key in this.data) {
+				this.items.push('<li><a href="' + 
+					this.data[key].permalink_url + '" target="m">' +
+					this.data[key].title + '</a><br><span class="album">'+ 
+					this.data[key].user.username + '</span></li>');
 			}
-		}
-
-
-	var grooveshark = new iAPI('grooveshark');
+		};
+			
+	var grooveshark = new iAPI('grooveshark', 'Grooveshark');
 
 		grooveshark.endpoint = function() {
-			return('http://www.mattmontag.com/smasher/blabber.php?mode=native&url='+escape('http://tinysong.com/s/'+escape(this.query)+'?format=json&limit=30&key=b52cef0a3536b4feed58c9c2b0a2bdce'));
-		}
+			return('proxy.php?mode=native&url='+escape('http://tinysong.com/s/'+escape(this.query)+'?format=json&limit=30&key=b52cef0a3536b4feed58c9c2b0a2bdce'));
+		};
 		
 		grooveshark.parse = function() {
 			for(key in this.data){ 
@@ -70,18 +63,18 @@ $(document).ready(function() {
 					this.data[key].SongName + '</a><br><span class="album">'+ 
 					this.data[key].AlbumName+'</span></li>');
 			}	
-		}
+		};
 		
-	var rdio = new iAPI('rdio');
+	var rdio = new iAPI('rdio', 'Rdio');
 		
 		rdio.numResults = function(){
 			//return this.data.result.number_results;
 			return this.items.length;
-		}
+		};
 
 		rdio.endpoint = function() {
-			return('beep.php?api=rdio&query='+this.query);
-		}
+			return('oauthproxy.php?api=rdio&query='+this.query);
+		};
 		
 		rdio.parse = function() {
 			for(key in this.data.result.results) {
@@ -94,10 +87,7 @@ $(document).ready(function() {
 						this.data.result.results[key].album + '</span></li>');
 				}
 			}
-		}
-
-	// Prefetch Napster session key
-	//napster.napsterKey();
+		};
 	
 	// Set cursor to search box
 	$('#q').focus();
@@ -110,31 +100,53 @@ $(document).ready(function() {
 			spotify.submit(q);
 			rdio.submit(q); 
 			grooveshark.submit(q);
-			//napster.submit(q); 
+			soundcloud.submit(q);
+			mog.submit(q);
 		} catch(e) {
 			console.log(e);
 		}
 		return false;
 	});
+	
+	// Create each service result container in DOM
+	spotify.addToDom();
+	rdio.addToDom();
+	grooveshark.addToDom();
+	soundcloud.addToDom();
+	mog.addToDom();
 
 });
 
-function iAPI(name){
+function iAPI(name, nicename){
 	// Properties
+	this.apiNiceName = nicename;
 	this.apiName = name;
 	this.items = []; //array of HTML strings, i.e. "<li>Radiohead - Karma Police</li>"
 	this.data = [];  //JSON parsed data structure
 	this.query = "";
 	this.busy = false;
-	
-	$('#'+this.apiName+' .loading').append('<img src="images/ajax_loading.gif"><br><div class="refresh">Refresh <img src="images/refresh.png"></div>');
-	$('#'+this.apiName+' .refresh').click($.proxy(function(event) {
-		//var q = $('#q').val(); 
-		console.log(this.apiName + ' refresh');
-		this.submit(this.query); // Reuse old query value
-	}, this));
-	
+		
 	// Methods
+	this.addToDom = function() {
+		var html = '<div class="col" id="'+ this.apiName + '"> \
+		<h2> \
+			<img src="images/' + this.apiName + '.png" class="logo"> \
+			' + this.apiNiceName + ' <span class="num-results"></span></h2> \
+			<div class="loading"> \
+				<img src="images/ajax_loading.gif"><br> \
+				<div id="refresh">Refresh <img src="images/refresh.png"></div> \
+			</div> \
+			<div class="results"></div> \
+		</div>';
+		$('#services').append(html);
+	
+		$('#'+this.apiName+' #refresh').click($.proxy(function(event) {
+			//var q = $('#q').val(); 
+			console.log(this.apiName + ' refresh');
+			this.submit(this.query); // Reuse old query value
+		}, this));
+	};
+	
 	this.submit = function(query){
 		console.log(this.apiName + ' submit');
 		this.query = query;
@@ -180,4 +192,5 @@ function iAPI(name){
 	// Abstract methods
 	this.endpoint = function(){};
 	this.parse = function(){};
+
 }
