@@ -45,7 +45,7 @@ Date: February 12, 2011
 <a href="http://www.mattmontag.com/music/music-smasher-streaming-music-api-mashup">Feedback</a>
 
 <form id="qform">
-	<p><input id="q"> <input type="submit" value="Smash"><br><input type="checkbox" id="us" name="us" checked> US Catalog Only
+	<p><input id="q"> <input type="submit" class="Button" value="Smash"><br><input type="checkbox" id="us" name="us" checked> US Catalog Only
 </form>
 </div><br>
 

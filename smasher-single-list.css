@@ -22,10 +22,15 @@ h2 {
 	white-space: nowrap;
 }
 
+.result-list li:last-child {
+	border-bottom: none;
+}
+
 .result-list {
 	margin: 0;
 	padding: 0; 
 	overflow: auto;
+	max-height: none;
 }
 
 .album {
@@ -33,6 +38,8 @@ h2 {
 	color: gray;
 	display: inline-block;
 	width: 50%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .result-list li a {
@@ -40,7 +47,6 @@ h2 {
 	display: inline-block;
 	vertical-align: top;
 	margin-right: 1%;
-	max-height: none;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
