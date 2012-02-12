@@ -23,7 +23,7 @@ $(document).ready(function() {
 				this.items.push('<li><a href="' + 
 					this.data.tracks[key].href + '">' + 
 					artistString + ' - ' + 
-					this.data.tracks[key].name + '</a><br><span class="album">'+ 
+					this.data.tracks[key].name + '</a><span class="album">'+ 
 					this.data.tracks[key].album.name+'</span></li>');
 			}
 		};
@@ -51,7 +51,7 @@ $(document).ready(function() {
 				this.items.push('<li><a href="' + 
 					url + '" target="m">' + 
 					artist + ' - ' + 
-					track + '</a><br><span class="album">'+ 
+					track + '</a><span class="album">'+ 
 					album + '</span></li>');
 			}
 		};
@@ -66,7 +66,7 @@ $(document).ready(function() {
 			for(key in this.data) {
 				this.items.push('<li><a href="' + 
 					this.data[key].permalink_url + '" target="m">' +
-					this.data[key].title + '</a><br><span class="album">'+ 
+					this.data[key].title + '</a><span class="album">'+ 
 					this.data[key].user.username + '</span></li>');
 			}
 		};
@@ -128,7 +128,7 @@ $(document).ready(function() {
 								self.items.push('<li><a href="' + 
 									URL + '" target="m">' +
 									Artist + ' - ' + 
-									Track + '</a><br><span class="album">'+ 
+									Track + '</a><span class="album">'+ 
 								 	Album + '</span></li>');
 							}
 							self.updateDOM();
@@ -136,12 +136,6 @@ $(document).ready(function() {
 					}
 				}
 			});
-			
-			// this.items.push('<li><a href="' + 
-			// 	this.data[key].Url + '" target="m">' +
-			// 	this.data[key].ArtistName + ' - ' + 
-			// 	this.data[key].SongName + '</a><br><span class="album">'+ 
-			// 	this.data[key].AlbumName+'</span></li>');
 		};
 			
 	var grooveshark = new iAPI('grooveshark', 'Grooveshark');
@@ -157,7 +151,7 @@ $(document).ready(function() {
 				this.items.push('<li><a href="' + 
 					this.data[key].Url + '" target="m">' +
 					this.data[key].ArtistName + ' - ' + 
-					this.data[key].SongName + '</a><br><span class="album">'+ 
+					this.data[key].SongName + '</a><span class="album">'+ 
 					this.data[key].AlbumName+'</span></li>');
 			}	
 		};
@@ -180,7 +174,7 @@ $(document).ready(function() {
 					this.items.push('<li><a href="' + 
 						this.data.result.results[key].shortUrl + '" target="m">' +
 						this.data.result.results[key].artist + ' - ' + 
-						this.data.result.results[key].name + '</a><br><span class="album">'+ 
+						this.data.result.results[key].name + '</a><span class="album">'+ 
 						this.data.result.results[key].album + '</span></li>');
 				}
 			}
@@ -228,12 +222,13 @@ function iAPI(name, nicename){
 		
 	// Methods
 	this.addToDOM = function() {
+		// TODO: implement with JS template
 		var html = '<div class="col" id="'+ this.apiName + '"> \
 		<h2> \
 			<img src="images/' + this.apiName + '.png" class="logo"> \
 			' + this.apiNiceName + ' <span class="num-results"></span></h2> \
 			<div class="loading"> \
-				<img src="images/ajax_loading.gif"><br> \
+				<img src="images/ajax_loading.gif"> \
 				<div class="refresh">Refresh <img src="images/refresh.png"></div> \
 			</div> \
 			<div class="note">' + this.note + '</div> \
@@ -242,7 +237,6 @@ function iAPI(name, nicename){
 		$('#services').append(html);
 	
 		$('#'+this.apiName+' .refresh').click($.proxy(function(event) {
-			//var q = $('#q').val(); 
 			console.log(this.apiName + ' refresh');
 			this.submit(this.query); // Reuse old query value
 		}, this));

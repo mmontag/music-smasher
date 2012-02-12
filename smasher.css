@@ -30,7 +30,7 @@ input {
 
 .col {
 	display: inline-block;
-	width: 350px;
+	width: 300px;
 	margin: 0 8px;
 	text-align: left;
 	vertical-align: top;
@@ -81,7 +81,7 @@ a:hover {
 
 .num-results {
 	color: #bbb;
-	font-size: 82%;
+	font-size: 66%;
 }
 
 .loading {
