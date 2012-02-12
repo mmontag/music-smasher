@@ -59,7 +59,7 @@ $(document).ready(function() {
 	var soundcloud = new iAPI('soundcloud', 'SoundCloud');
 	
 		soundcloud.endpoint = function() {
-			return('http://api.soundcloud.com/tracks.json?q='+this.query+'&client_id=f7def983532e3e44229d757cdab43cbe');
+			return('http://api.soundcloud.com/tracks.json?q=' + this.query + '&client_id=f7def983532e3e44229d757cdab43cbe');
 		};
 		
 		soundcloud.parse = function() {
@@ -70,15 +70,88 @@ $(document).ready(function() {
 					this.data[key].user.username + '</span></li>');
 			}
 		};
+		
+	var bandcamp = new iAPI('bandcamp', 'Bandcamp');
+	
+		bandcamp.note = "Bandcamp will only match your search against full artist names.";
+	
+		bandcamp.numResults = function() {
+			return this.items.length;
+		};
+	
+		bandcamp.endpoint = function() {
+			var ep = 'http://api.bandcamp.com/api/band/3/search?callback=?&name=' + this.query + '&key=drepradstrendirheinbryni';
+			console.log(ep);
+			return(ep);
+		};
+		
+		bandcamp.parse = function() {
+			
+			// YUCK. Bandcamp, you can do better than this
+
+			var apikey = "drepradstrendirheinbryni";
+			//veidihundr samvinnaritutlaaptarlapustr drepradstrendirheinbryni eyjafjallajokull
+			var ep = "http://api.bandcamp.com/api";
+			var bands = this.data.results;
+			var band_ids = [];
+			for(key in bands) {
+				band_ids.push(bands[key].band_id);
+			}
+			console.log(band_ids);
+			band_ids.push(1);
+			var band_string = band_ids.join(',');	
+			var url = ep + "/band/3/discography?callback=?&band_id=" + band_string + "&key=" + apikey;
+			console.log(url);
+			
+			var self = this;
+			
+			var ajax = $.getJSON(url, function(data) {
+				console.log(data);
+				var album_ids = [];
+				for(artist_id in data) {	
+					var albums = data[artist_id].discography;
+					for(key in albums) {
+						var album_id = albums[key].album_id;
+						var Artist = albums[key].artist;
+						var Album = albums[key].title;
+						var url = ep + "/album/2/info?callback=?&album_id=" + album_id + "&key=" + apikey;
+						console.log(url);
+						
+						var ajax = $.getJSON(url, function(data) {
+							console.log(data);
+							
+							for(key in data.tracks) {
+								var Track = data.tracks[key].title;
+								var URL = "http://www.bandcamp.com" + data.tracks[key].url;
+								self.items.push('<li><a href="' + 
+									URL + '" target="m">' +
+									Artist + ' - ' + 
+									Track + '</a><br><span class="album">'+ 
+								 	Album + '</span></li>');
+							}
+						});
+					}
+				}
+				self.updateDOM();
+			});
+			
+			// this.items.push('<li><a href="' + 
+			// 	this.data[key].Url + '" target="m">' +
+			// 	this.data[key].ArtistName + ' - ' + 
+			// 	this.data[key].SongName + '</a><br><span class="album">'+ 
+			// 	this.data[key].AlbumName+'</span></li>');
+		};
 			
 	var grooveshark = new iAPI('grooveshark', 'Grooveshark');
+	
+		grooveshark.note = "Grooveshark will return a maximum of 15 results.";
 
 		grooveshark.endpoint = function() {
-			return('proxy.php?mode=native&url='+escape('http://tinysong.com/s/'+escape(this.query)+'?format=json&limit=30&key=b52cef0a3536b4feed58c9c2b0a2bdce'));
+			return('proxy.php?mode=native&url='+escape('http://tinysong.com/s/' + escape(this.query) + '?format=json&limit=30&key=b52cef0a3536b4feed58c9c2b0a2bdce'));
 		};
 		
 		grooveshark.parse = function() {
-			for(key in this.data){ 
+			for(key in this.data) { 
 				this.items.push('<li><a href="' + 
 					this.data[key].Url + '" target="m">' +
 					this.data[key].ArtistName + ' - ' + 
@@ -95,7 +168,7 @@ $(document).ready(function() {
 		};
 
 		rdio.endpoint = function() {
-			return('oauthproxy.php?api=rdio&query='+this.query);
+			return('oauthproxy.php?api=rdio&query=' + this.query);
 		};
 		
 		rdio.parse = function() {
@@ -119,11 +192,12 @@ $(document).ready(function() {
 		event.preventDefault();
 		var q = $('#q').val();
 		try {
-			spotify.submit(q);
-			rdio.submit(q); 
-			grooveshark.submit(q);
-			soundcloud.submit(q);
-			mog.submit(q);
+			// spotify.submit(q);
+			// rdio.submit(q); 
+			// grooveshark.submit(q);
+			// soundcloud.submit(q);
+			// mog.submit(q);
+			bandcamp.submit(q);
 		} catch(e) {
 			console.log(e);
 		}
@@ -131,11 +205,12 @@ $(document).ready(function() {
 	});
 	
 	// Create each service result container in DOM
-	rdio.addToDom();
-	spotify.addToDom();
-	grooveshark.addToDom();
-	soundcloud.addToDom();
-	mog.addToDom();
+	rdio.addToDOM();
+	spotify.addToDOM();
+	grooveshark.addToDOM();
+	soundcloud.addToDOM();
+	mog.addToDOM();
+	bandcamp.addToDOM();
 
 });
 
@@ -146,23 +221,25 @@ function iAPI(name, nicename){
 	this.items = []; //array of HTML strings, i.e. "<li>Radiohead - Karma Police</li>"
 	this.data = [];  //JSON parsed data structure
 	this.query = "";
+	this.note = "";
 	this.busy = false;
 		
 	// Methods
-	this.addToDom = function() {
+	this.addToDOM = function() {
 		var html = '<div class="col" id="'+ this.apiName + '"> \
 		<h2> \
 			<img src="images/' + this.apiName + '.png" class="logo"> \
 			' + this.apiNiceName + ' <span class="num-results"></span></h2> \
 			<div class="loading"> \
 				<img src="images/ajax_loading.gif"><br> \
-				<div id="refresh">Refresh <img src="images/refresh.png"></div> \
+				<div class="refresh">Refresh <img src="images/refresh.png"></div> \
 			</div> \
+			<div class="note">' + this.note + '</div> \
 			<div class="results"></div> \
 		</div>';
 		$('#services').append(html);
 	
-		$('#'+this.apiName+' #refresh').click($.proxy(function(event) {
+		$('#'+this.apiName+' .refresh').click($.proxy(function(event) {
 			//var q = $('#q').val(); 
 			console.log(this.apiName + ' refresh');
 			this.submit(this.query); // Reuse old query value
@@ -173,6 +250,7 @@ function iAPI(name, nicename){
 		console.log(this.apiName + ' submit');
 		this.query = query;
 		this.items = [];
+		$('#'+this.apiName+' .note').hide();
 		$('#'+this.apiName+' .loading').show();
 		$('#'+this.apiName+' .results').empty();
 		$('#'+this.apiName+' .num-results').empty();
@@ -205,10 +283,7 @@ function iAPI(name, nicename){
 	
 	this.updateDOM = function(){
 		$('#'+this.apiName+' .num-results').html(this.numResults() + ' Results');
-		$('<ul/>', {
-			'class': 'result-list',
-			html: this.items.join('')
-		}).appendTo('#'+this.apiName+' .results');	
+		$('#'+this.apiName+' .results').html('<ul class="result-list">' + this.items.join() + '</ul>');	
 	};
 	
 	// Abstract methods

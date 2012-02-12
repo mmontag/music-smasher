@@ -89,6 +89,13 @@ a:hover {
 	width: 100%;
 }
 
+.note {
+	width: 70%;
+	text-align: center;
+	margin: 2em auto;
+	color: #ccc;
+}
+
 .album {
 	font-size: 90%;
 	color: gray;
