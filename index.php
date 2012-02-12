@@ -3,9 +3,7 @@
 
 Music Smasher
 Author: matt.montag@gmail.com
-Date: July 20, 2011
-
-Notes: Napster API search is disabled as of December 1, 2011. Napster has been acquired by Rhapsody.
+Date: February 12, 2011
 
 -->
 <html>
@@ -24,6 +22,7 @@ Notes: Napster API search is disabled as of December 1, 2011. Napster has been a
 
 </script>
 <link rel="stylesheet" href="smasher.css">
+<link rel="stylesheet" media="(max-width: 1000px)" href="smasher-single-list.css">
 </head>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://use.typekit.com/cra3tda.js"></script>
