@@ -113,26 +113,28 @@ $(document).ready(function() {
 					for(key in albums) {
 						var album_id = albums[key].album_id;
 						var Artist = albums[key].artist;
-						var Album = albums[key].title;
+
+						var ArtistURL = albums[key].url.substr(0,albums[key].url.indexOf("/album/"));
+						
 						var url = ep + "/album/2/info?callback=?&album_id=" + album_id + "&key=" + apikey;
 						console.log(url);
 						
 						var ajax = $.getJSON(url, function(data) {
 							console.log(data);
-							
+							var Album = data.title;
 							for(key in data.tracks) {
 								var Track = data.tracks[key].title;
-								var URL = "http://www.bandcamp.com" + data.tracks[key].url;
+								var URL = ArtistURL + data.tracks[key].url;
 								self.items.push('<li><a href="' + 
 									URL + '" target="m">' +
 									Artist + ' - ' + 
 									Track + '</a><br><span class="album">'+ 
 								 	Album + '</span></li>');
 							}
+							self.updateDOM();
 						});
 					}
 				}
-				self.updateDOM();
 			});
 			
 			// this.items.push('<li><a href="' + 
@@ -192,11 +194,11 @@ $(document).ready(function() {
 		event.preventDefault();
 		var q = $('#q').val();
 		try {
-			// spotify.submit(q);
-			// rdio.submit(q); 
-			// grooveshark.submit(q);
-			// soundcloud.submit(q);
-			// mog.submit(q);
+			spotify.submit(q);
+			rdio.submit(q); 
+			grooveshark.submit(q);
+			soundcloud.submit(q);
+			mog.submit(q);
 			bandcamp.submit(q);
 		} catch(e) {
 			console.log(e);
@@ -283,7 +285,7 @@ function iAPI(name, nicename){
 	
 	this.updateDOM = function(){
 		$('#'+this.apiName+' .num-results').html(this.numResults() + ' Results');
-		$('#'+this.apiName+' .results').html('<ul class="result-list">' + this.items.join() + '</ul>');	
+		$('#'+this.apiName+' .results').html('<ul class="result-list">' + this.items.join('') + '</ul>');	
 	};
 	
 	// Abstract methods

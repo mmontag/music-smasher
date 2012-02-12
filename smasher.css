@@ -56,7 +56,9 @@ a, a:visited, a:link {
 #spotify a, #spotify a:visited, #spotify a:link { color: #6a2; }
 #rdio a, #rdio a:visited, #rdio a:link { color: #27e; }
 #grooveshark a, #grooveshark a:visited, #grooveshark a:link { color: #e80; }
+#mog a, #mog a:visited, #mog a:link { color: #444; }
 #soundcloud a, #soundcloud a:visited, #soundcloud a:link { color: #f52a04; }
+#bandcamp a, #bandcamp a:visited, #bandcamp a:link  { color: #619aa9; }
 
 a:hover {
 	text-decoration: underline;
