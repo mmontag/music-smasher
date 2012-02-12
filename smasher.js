@@ -30,8 +30,30 @@ $(document).ready(function() {
 	
 	var mog = new iAPI('mog', 'MOG');
 	
+		mog.numResults = function() {
+			return this.items.length;
+		};
+	
 		mog.endpoint = function() {
-			return('https://search.mog.com/mfastsearch?nq=' + this.query + '&ntn=10');
+			return('https://search.mog.com/mfastsearch?nq=' + this.query + '&ntn=26');
+		};
+		
+		mog.parse = function() {
+			this.data = this.data[2]; // MOG returns junk outside here
+			for(key in this.data) {
+				
+				//var url    = this.data[key][
+				var url = "https://mog.com/tracks/mn" + this.data[key][2][1];
+				var artist = this.data[key][0][2];
+				var album  = this.data[key][1][2];
+				var track  = this.data[key][2][2];
+				
+				this.items.push('<li><a href="' + 
+					url + '" target="m">' + 
+					artist + ' - ' + 
+					track + '</a><br><span class="album">'+ 
+					album + '</span></li>');
+			}
 		};
 		
 	var soundcloud = new iAPI('soundcloud', 'SoundCloud');
@@ -109,8 +131,8 @@ $(document).ready(function() {
 	});
 	
 	// Create each service result container in DOM
-	spotify.addToDom();
 	rdio.addToDom();
+	spotify.addToDom();
 	grooveshark.addToDom();
 	soundcloud.addToDom();
 	mog.addToDom();

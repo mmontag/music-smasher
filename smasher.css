@@ -1,6 +1,6 @@
 body, td {
 	font-family: Arial;
-	margin: 20px;
+	margin: 20px 5px;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -30,7 +30,7 @@ input {
 
 .col {
 	display: inline-block;
-	width: 360px;
+	width: 350px;
 	margin: 0 8px;
 	text-align: left;
 	vertical-align: top;
