@@ -11,7 +11,6 @@ Date: February 12, 2011
 <head><title>MUSIC SMASHER</title>
 <meta property="fb:admins" content="16903206" />
 <link rel="stylesheet" href="<?= $app_path ?>smasher.css">
-<link rel="stylesheet" href="<?= $app_path ?>smasher-single-list.css">
 <script type="text/javascript">
 
   var _gaq = _gaq || [];

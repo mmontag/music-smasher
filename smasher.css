@@ -16,10 +16,11 @@ h1 {
 
 h2 {
 	padding: 4px 0;
-	border-bottom: 1px solid #ddd;
-	border-top: 2px solid black; 
 	font-size: 160%;
 	margin-bottom: .5em;
+	margin-top: 0;
+	border-bottom: 1px solid #ccc; 
+	border-top: 1px solid #ccc;
 }
 
 input {
@@ -37,7 +38,8 @@ input {
 
 .col {
 	display: inline-block;
-	width: 300px;
+	max-width: 800px;
+	width: 90%;
 	margin: 0 8px;
 	text-align: left;
 	vertical-align: top;
@@ -79,16 +81,31 @@ a:hover {
 .result-list li {
 	list-style: none;
 	margin: 0;
-	padding: 4px 0;
-	border-bottom: 1px solid #ddd;
+	padding: 0;
+	border-bottom: 1px solid #eeeeee;
 	font-size: 12px;
+	position: relative;
+	clear: both;
+	line-height: 20px;
+	white-space: nowrap;
+}
+
+.result-list li:last-child {
+	border-bottom: none;
+}
+
+.result-list li a {
+	width: 49%;
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 1%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .result-list {
 	margin: 0;
-	padding: 0 1em 0 0;
-	max-height: 400px; 
-	overflow: auto;
+	padding: 0; 
 }
 
 .num-results {
@@ -113,7 +130,11 @@ a:hover {
 .album {
 	font-size: 90%;
 	color: gray;
-	display: block;
+	display: inline-block;
+	width: 50%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
 }
 
 .refresh { cursor: pointer; }
