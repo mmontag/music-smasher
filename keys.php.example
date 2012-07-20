@@ -1,0 +1,18 @@
+<?php
+
+/*
+API keys for music smasher
+*/
+
+//Rdio
+$keys['rdio']['key'] = "";
+$keys['rdio']['secret'] = "";
+
+//SoundCloud
+$keys['soundcloud']['key'] = "";
+$keys['soundcloud']['secret'] = "";
+
+//Grooveshark
+$keys['grooveshark']['key'] = "";
+
+?>

@@ -1,0 +1,8 @@
+.*
+!/.gitignore
+.idea/
+images2/
+[Rr]esources/
+keys.php
+underscore-min.js
+backbone-min.js

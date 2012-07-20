@@ -1,7 +1,7 @@
 // Do this when the page loads
 $(document).ready(function() {
 	
-	var spotify = new iAPI('spotify', 'Spotify');
+	var spotify = new iAPI('spotify', 'Spotify', 'http://www.spotify.com');
 
 		spotify.numResults = function(){
 			return this.items.length;
@@ -28,25 +28,26 @@ $(document).ready(function() {
 			}
 		};
 	
-	var mog = new iAPI('mog', 'MOG');
+	var mog = new iAPI('mog', 'MOG', 'http://www.mog.com');
 	
 		mog.numResults = function() {
 			return this.items.length;
 		};
 	
 		mog.endpoint = function() {
-			return('https://search.mog.com/mfastsearch?nq=' + this.query + '&ntn=26');
+			return('http://search.mog.com/v2/tracks/search.json?q=' + this.query + '&count=50&index=0&allow_nonstreamable_token=0');
 		};
 		
 		mog.parse = function() {
-			this.data = this.data[2]; // MOG returns junk outside here
-			for(key in this.data) {
+			mogdata = this.data;
+			console.log("MOG", this.data);
+			for(key in this.data.tracks) {
 				
 				//var url    = this.data[key][
-				var url = "https://mog.com/tracks/mn" + this.data[key][2][1];
-				var artist = this.data[key][0][2];
-				var album  = this.data[key][1][2];
-				var track  = this.data[key][2][2];
+				var url = "http://mog.com/tracks/mn" + this.data.tracks[key].track_id;
+				var artist = this.data.tracks[key].artist_name;
+				var album  = this.data.tracks[key].album_name;
+				var track  = this.data.tracks[key].track_name;
 				
 				this.items.push('<li><a href="' + 
 					url + '" target="m">' + 
@@ -56,8 +57,13 @@ $(document).ready(function() {
 			}
 		};
 		
-	var soundcloud = new iAPI('soundcloud', 'SoundCloud');
+	var soundcloud = new iAPI('soundcloud', 'SoundCloud', 'http://www.soundcloud.com');
 	
+		// Hello, curious hacker person. Wouldn't it be easy to steal this API key and do Evil Things? 
+		// Why yes, and it would also be fairly easy to burn your neighbor's house down. I trust that you won't do these things.
+		// Music Smasher is fast because most of the API requests are sent directly to the service provider, instead of first
+		// going through a proxy in order to hide an API key. Let's keep it that way! 
+		
 		soundcloud.endpoint = function() {
 			return('http://api.soundcloud.com/tracks.json?q=' + this.query + '&client_id=f7def983532e3e44229d757cdab43cbe');
 		};
@@ -71,17 +77,16 @@ $(document).ready(function() {
 			}
 		};
 		
-	var bandcamp = new iAPI('bandcamp', 'Bandcamp');
+	var bandcamp = new iAPI('bandcamp', 'Bandcamp', 'http://www.bandcamp.com');
 	
 		bandcamp.note = "Bandcamp will only match your search against full artist names.";
 	
 		bandcamp.numResults = function() {
 			return this.items.length;
 		};
-	
+
 		bandcamp.endpoint = function() {
 			var ep = 'http://api.bandcamp.com/api/band/3/search?callback=?&name=' + this.query + '&key=drepradstrendirheinbryni';
-			console.log(ep);
 			return(ep);
 		};
 		
@@ -90,23 +95,19 @@ $(document).ready(function() {
 			// YUCK. Bandcamp, you can do better than this
 
 			var apikey = "drepradstrendirheinbryni";
-			//veidihundr samvinnaritutlaaptarlapustr drepradstrendirheinbryni eyjafjallajokull
 			var ep = "http://api.bandcamp.com/api";
 			var bands = this.data.results;
 			var band_ids = [];
 			for(key in bands) {
 				band_ids.push(bands[key].band_id);
 			}
-			console.log(band_ids);
 			band_ids.push(1);
 			var band_string = band_ids.join(',');	
 			var url = ep + "/band/3/discography?callback=?&band_id=" + band_string + "&key=" + apikey;
-			console.log(url);
 			
 			var self = this;
 			
 			var ajax = $.getJSON(url, function(data) {
-				console.log(data);
 				var album_ids = [];
 				for(artist_id in data) {	
 					var albums = data[artist_id].discography;
@@ -117,10 +118,8 @@ $(document).ready(function() {
 						var ArtistURL = albums[key].url.substr(0,albums[key].url.indexOf("/album/"));
 						
 						var url = ep + "/album/2/info?callback=?&album_id=" + album_id + "&key=" + apikey;
-						console.log(url);
 						
 						var ajax = $.getJSON(url, function(data) {
-							console.log(data);
 							var Album = data.title;
 							for(key in data.tracks) {
 								var Track = data.tracks[key].title;
@@ -138,12 +137,13 @@ $(document).ready(function() {
 			});
 		};
 			
-	var grooveshark = new iAPI('grooveshark', 'Grooveshark');
-	
+	var grooveshark = new iAPI('grooveshark', 'Grooveshark', 'http://www.grooveshark.com');
+		
+		//grooveshark.note = "Down for maintenance. Will be back by midnight PST.";
 		grooveshark.note = "Grooveshark will return a maximum of 15 results.";
 
 		grooveshark.endpoint = function() {
-			return('proxy.php?mode=native&url='+escape('http://tinysong.com/s/' + escape(this.query) + '?format=json&limit=30&key=b52cef0a3536b4feed58c9c2b0a2bdce'));
+			return('proxy.php?mode=native&url='+escape('http://tinysong.com/s/' + escape(this.query) + '?format=json&limit=32'));
 		};
 		
 		grooveshark.parse = function() {
@@ -156,7 +156,7 @@ $(document).ready(function() {
 			}	
 		};
 		
-	var rdio = new iAPI('rdio', 'Rdio');
+	var rdio = new iAPI('rdio', 'Rdio', 'http://www.rdio.com');
 		
 		rdio.numResults = function(){
 			//return this.data.result.number_results;
@@ -186,7 +186,20 @@ $(document).ready(function() {
 	// Hook form submit action to each API
 	$('#qform').submit(function(event) {
 		event.preventDefault();
-		var q = $('#q').val();
+		
+		var q = $('#q').val(); 
+		
+		// Clean up query - the following are Allowed Characters
+		q = $.trim(q.replace(/[^a-zA-Z0-9����������������������������������������������������������� _\-!$]+/g,'').substring(0,80));
+		if(q == '') return false;
+		
+		// Wait 2.5 seconds before allowing another submission
+		if (waiting == true) { console.log("wait!"); return false; } 
+		setTimeout(function(){ waiting = false; console.log("ready"); }, 2500);
+		
+		// Don't duplicate search
+		if(q == lastsearch) { console.log("cancelling repeat search"); return false; } 
+		
 		try {
 			spotify.submit(q);
 			rdio.submit(q); 
@@ -194,11 +207,18 @@ $(document).ready(function() {
 			soundcloud.submit(q);
 			mog.submit(q);
 			bandcamp.submit(q);
+			lastsearch = q;
+			waiting = true;
+			appRouter.navigate(q.replace(/[ -]+/g,"-")); 	// query to URL
 		} catch(e) {
 			console.log(e);
 		}
 		return false;
 	});
+	
+	var search = function(query) {
+	
+	};
 	
 	// Create each service result container in DOM
 	rdio.addToDOM();
@@ -207,13 +227,58 @@ $(document).ready(function() {
 	soundcloud.addToDOM();
 	mog.addToDOM();
 	bandcamp.addToDOM();
+	
+	// Empower fist
+	$('#q').keydown(function(event) { if (event.keyCode == '13') { event.stopPropagation(); smash(); $('#qform').submit(); } });
+	$('.Button').mousedown(function() { smash(); });
+	$('#theFist').mouseup(function() { $('#qform').submit(); }); // Incase the Fist steals the mouseup event
+	
+	// Define URL to Method routing
+	var AppRouter = Backbone.Router.extend({
+		
+		routes: {
+			"*query":	"search"
+		},
+		
+		search: function(query) {
+			query = query.replace(/[ -]+/g," "); 			// URL to query
+			console.log("[Router] search:",query);
+			$('#q').val(query);
+			$('#qform').submit();
+		}
+	});
+	
+	// Instantiate the router
+	var appRouter = new AppRouter;
+	
+	// Start history and routing
+	console.log("backbone history start",   Backbone.history.start()   );
 
 });
 
-function iAPI(name, nicename){
+// Fist Smash
+function smash() {
+	try {
+		document.getElementById('punch').play();
+	} catch(e) {
+		console.log(e);
+	}
+	
+	$('#theFist').show();
+	$('#theFist').offset({ top: 0 - $('#theFist').height(), left: $('.Button').offset().left });
+	$('#theFist').animate({ 
+		top: $('.Button').offset().top + $('.Button').height() + 24 - $('#theFist').height() }, 
+		60, 
+		'linear', 
+		function() { $('#theFist').animate({ top: 0 - $('#theFist').height() }, 320); }
+	);
+}
+
+function iAPI(name, nicename, url){
 	// Properties
 	this.apiNiceName = nicename;
 	this.apiName = name;
+	this.apiURL = url;
 	this.items = []; //array of HTML strings, i.e. "<li>Radiohead - Karma Police</li>"
 	this.data = [];  //JSON parsed data structure
 	this.query = "";
@@ -225,7 +290,7 @@ function iAPI(name, nicename){
 		// TODO: implement with JS template
 		var html = '<div class="col" id="'+ this.apiName + '"> \
 		<h2> \
-			<img src="images/' + this.apiName + '.png" class="logo"> \
+			<a href="' + this.apiURL + '" target="_blank"><img src="images/' + this.apiName + '.png" class="logo"></a> \
 			' + this.apiNiceName + ' <span class="num-results"></span></h2> \
 			<div class="loading"> \
 				<img src="images/ajax_loading.gif"> \
@@ -243,7 +308,9 @@ function iAPI(name, nicename){
 	};
 	
 	this.submit = function(query){
+
 		console.log(this.apiName + ' submit');
+				
 		this.query = query;
 		this.items = [];
 		$('#'+this.apiName+' .note').hide();
@@ -268,7 +335,7 @@ function iAPI(name, nicename){
 		this.data = data;
 		$('#'+this.apiName+' .loading').hide();
 		console.log(this.apiName+' received callback');
-		console.log(data);
+		//console.log(data);
 		this.parse();
 		if(this.numResults() == 0) {
 			$('<p>No results found.</p>').appendTo('#'+this.apiName+' .results');
@@ -287,3 +354,54 @@ function iAPI(name, nicename){
 	this.parse = function(){};
 
 }
+
+var waiting = false;
+var lastsearch = '';
+window.console||(window.console={log:function(){}}); //console.log bypass for older browsers
+
+// IE8/9 CORS cross-domain requests compatibility (kinda essential for Music Smasher)
+// https://github.com/jaubourg/ajaxHooks/blob/master/src/ajax/xdr.js
+(function( jQuery ) {
+
+if ( window.XDomainRequest ) {
+	jQuery.ajaxTransport(function( s ) {
+		if ( s.crossDomain && s.async ) {
+			if ( s.timeout ) {
+				s.xdrTimeout = s.timeout;
+				delete s.timeout;
+			}
+			var xdr;
+			return {
+				send: function( _, complete ) {
+					function callback( status, statusText, responses, responseHeaders ) {
+						xdr.onload = xdr.onerror = xdr.ontimeout = jQuery.noop;
+						xdr = undefined;
+						complete( status, statusText, responses, responseHeaders );
+					}
+					xdr = new XDomainRequest();
+					xdr.open( s.type, s.url );
+					xdr.onload = function() {
+						callback( 200, "OK", { text: xdr.responseText }, "Content-Type: " + xdr.contentType );
+					};
+					xdr.onerror = function() {
+						callback( 404, "Not Found" );
+					};
+					if ( s.xdrTimeout ) {
+						xdr.ontimeout = function() {
+							callback( 0, "timeout" );
+						};
+						xdr.timeout = s.xdrTimeout;
+					}
+					xdr.send( ( s.hasContent && s.data ) || null );
+				},
+				abort: function() {
+					if ( xdr ) {
+						xdr.onerror = jQuery.noop();
+						xdr.abort();
+					}
+				}
+			};
+		}
+	});
+}
+})( jQuery );

@@ -40,12 +40,13 @@ h2 {
 	width: 50%;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	vertical-align: middle;
 }
 
 .result-list li a {
 	width: 49%;
 	display: inline-block;
-	vertical-align: top;
+	vertical-align: middle;
 	margin-right: 1%;
 	overflow: hidden;
 	text-overflow: ellipsis;

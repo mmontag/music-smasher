@@ -138,11 +138,19 @@
 // Change these configuration options if needed, see above descriptions for info.
 $enable_jsonp    = false;
 $enable_native   = true;
-$valid_url_regex = '/.*/';
+$valid_url_regex = '#^http://(www.)?tinysong.com/s/.{0,256}#';
+if( strpos($_SERVER['HTTP_REFERER'], "http://mattmontag.com") === false &&
+	strpos($_SERVER['HTTP_REFERER'], "http://www.mattmontag.com") === false &&
+	strpos($_SERVER['HTTP_REFERER'], "http://musicsmasher.net") === false &&
+	strpos($_SERVER['HTTP_REFERER'], "http://www.musicsmasher.net") === false ) die($_SERVER['HTTP_REFERER'] . ' Invalid');
+	
+include('keys.php');
+$key = $keys['grooveshark']['key'];
+$url = stripslashes($_GET['url']) . "&key=$key";
 
 // ############################################################################
 
-$url = stripslashes($_GET['url']);
+
 
 if ( !$url ) {
   
@@ -155,6 +163,7 @@ if ( !$url ) {
   // Passed url doesn't match $valid_url_regex.
   $contents = 'ERROR: invalid url';
   $status = array( 'http_code' => 'ERROR' );
+  die('Wrong');
   
 } else {
   $ch = curl_init( $url );
@@ -208,7 +217,7 @@ if ( $_GET['mode'] == 'native' ) {
   
   //Montag 5:29 AM 7/22/2011 - add the Access-Control-Allow-Origin header for local testing.
   //disable this in production.
-  header("Access-Control-Allow-Origin: *");
+  //header("Access-Control-Allow-Origin: *");
   
   print $contents;
   
