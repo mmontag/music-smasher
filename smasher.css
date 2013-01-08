@@ -1,6 +1,95 @@
+html { -webkit-font-smoothing: antialiased; }
+body { background-color: #322f2c; }
+
 body, td {
-	font-family: Arial;
-	margin: 20px 5px;
+	font-family: 'Lucida Grande', Tahoma, sans-serif;
+	margin: 0;
+}
+
+body.centered { overflow: hidden; }
+
+form { margin: 0; }
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+body.centered .table {
+	height: 100%;
+}
+
+.search {
+	padding: 40px 40px 20px 40px;
+	text-align: center;
+	background: url(images/black_paper.gif);
+	box-shadow: inset 0 -4px 10px black;
+	color: #999;
+
+	vertical-align: middle;
+}
+
+body.centered .search {
+	box-shadow: inset 0 0 256px #111;
+}
+
+.search .tagline {
+	display: none;
+	color: #777;
+	font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	font-weight: 300;
+	letter-spacing: 1px;
+	font-size: 20px;
+	margin-bottom: 5px;
+}
+
+body.centered .search .tagline {
+	display: block;
+}
+
+.search .logos {
+	display: none;
+	margin: 40px 0 0 0;
+}
+
+.search .logos img {
+	height: 50px;
+}
+
+body.centered .search .logos {
+	display: block;
+}
+
+.search .details {
+	font-size: 11px;
+	white-space: nowrap;
+	line-height: 22px;
+	margin: 2px;
+	opacity: 0.25;
+	-webkit-transition: opacity linear 0.1s;
+	transition: opacity linear 0.1s;
+}
+
+.search .details:hover {
+	opacity: 1.0;
+}
+
+body.centered .content {
+	overflow: hidden;
+	display: none;
+	top: 100%;
+}
+
+.content {
+	padding: 20px;
+	text-align: center;
+	background: url(images/white_paper.png);
+	box-shadow: inset 0 2px 2px white;
+	-webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -8,40 +97,69 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 h1 {
-	font-family: ff-mach-web-pro-1,ff-mach-web-pro-2;
-	font-weight: 900;
+	font-family: 'Fredoka One';
 	margin: 0;
-	padding-top: 16px; /* IE */
+	x-padding-top: 16px; /* IE */
+	display: inline-block;
+    font-size: 52px;
+}
+
+body.centered h1 {
+	font-size: 66px;
+	display: block;
+}
+
+.pagetitle a, .pagetitle a:link, .pagetitle a:visited, .pagetitle a:hover {
+    text-decoration: none;
+    color: #f0f0f0;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, .5);
+    -webkit-mask-image: url(images/speckle_paper.png);
+    -moz-mask-image: url(images/speckle_paper.png);
+    -o-mask-image: url(images/speckle_paper.png);
+    mask-image: url(images/speckle_paper.png);
 }
 
 h2 {
-	padding: 4px 0;
 	font-size: 160%;
-	margin: 15px 0 5px 0;
-	border-bottom: 1px solid #ddd; 
+	margin: 13px 0;
+	border-bottom: 2px solid #ddd;
+	text-shadow: 0 1px 0 white, 0 0px 9px #ddd;
+	color: #444;
+	line-height: 50px;
 }
 
-input {
-	font-size: 150%;
-	margin-bottom: 6px;
+input#q {
+	outline: 0;
+	background: #f0f0f0 url(images/gray_paper.gif);
+	border: 3px solid #111;
+	border-radius: 9px;
+	font-size: 20px;
+	padding: 7px 10px;
+	box-shadow: inset 0 9px 10px rgba(0,0,0,0.2), inset 0 0 2px 1px #fff;
+	font-family: Helvetica, Arial;
+	color: #333;
+	vertical-align: bottom;
+	margin: 5px 15px;
+	width: 300px;
+}
+
+body.centered input#q {
+	font-size: 24px;
+	width: 390px;
 }
 
 #us {
 	margin-top: 10px;
 }
 
-.pagetitle {
-    line-height: 2em;
+#services {
+	width: 90%;
+	max-width: 800px;
+	margin: 0 auto;
 }
 
 .col {
-	display: inline-block;
-	max-width: 800px;
-	width: 90%;
-	margin: 0 8px;
 	text-align: left;
-	vertical-align: top;
-
 }
 
 .footer {
@@ -51,8 +169,7 @@ input {
 	color: silver;
 	width: 380px;
 	padding: 10px;
-	border-top: 1px solid silver;
-	margin: 2em 1em 1em 1em;
+	margin: 1em auto;
 }
 
 #links a, #links a:link {
@@ -69,7 +186,8 @@ a, a:visited, a:link {
 #rdio a, #rdio a:visited, #rdio a:link { color: #27e; }
 #grooveshark a, #grooveshark a:visited, #grooveshark a:link { color: #e80; }
 #mog a, #mog a:visited, #mog a:link { color: #444; }
-#soundcloud a, #soundcloud a:visited, #soundcloud a:link { color: #f52a04; }
+#soundcloud a, #soundcloud a:visited, #soundcloud a:link { color: #f45914; }
+#youtube a, #youtube a:visited, #youtube a:link { color: #c21414; }
 #bandcamp a, #bandcamp a:visited, #bandcamp a:link  { color: #619aa9; }
 
 a:hover {
@@ -80,7 +198,8 @@ a:hover {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	border-bottom: 1px solid #eeeeee;
+	border-top: 1px solid rgba(255,255,255,0.75);
+	border-bottom: 1px solid rgba(0,0,0,0.05);
 	font-size: 12px;
 	position: relative;
 	clear: both;
@@ -90,6 +209,10 @@ a:hover {
 
 .result-list li:last-child {
 	border-bottom: none;
+}
+
+.result-list li:first-child {
+	border-top: none;
 }
 
 .result-list li a {
@@ -118,11 +241,26 @@ a:hover {
 	width: 100%;
 }
 
+.spinner {
+	margin: 10px;
+	width: 32px;
+	height: 32px;
+}
+
+.refresh { cursor: pointer; }
+.refresh img {
+	opacity: 0.5;
+	height: 12px;
+	width: 12px;
+	border: 0;
+}
+
 .note {
 	text-align: center;
 	margin: 2em 0;
 	padding: 0 15%;
-	color: #ccc;
+	color: #aaa;
+	text-shadow: 0 1px 0 white;
 }
 
 .album {
@@ -135,51 +273,38 @@ a:hover {
 	vertical-align: middle;
 }
 
-.refresh { cursor: pointer; }
-.refresh img {
-	border: 0;
-	vertical-align: middle;
-}
 
 .logo {
 	float: right; 
-	height: 24px;
-	padding: 3px; 
+	height: 50px;
+	margin: 0 -6px;
 	border: 0;
-}
-
-.brick {
-	display: inline-block;
-	margin: 0px 20px;
 }
 
 .Button {
-	position: relative;
 	cursor: pointer;
-	display: inline-block;
 	border: 0;
 	text-decoration: none;
 	font-size: 24px;
-	font-weight: bold;
 	text-align: center;
-	text-shadow: 0px -1px 2px #aaa, 1px 2px 0px white;
+	text-shadow: 0px -1px 1px #aaa, 1px 2px 0px white;
 	background: #eee;
 	padding: 7px 16px;
 	-webkit-border-radius: 11px;
 	-moz-border-radius: 11px;
 	border-radius: 11px;
 	-moz-box-shadow:inset 0px 0px 0px;
-	box-shadow: 0 2px 1px #aaa, 0 6px 1px #888, 0 10px 16px rgba(0,0,0, .33);
+	x-box-shadow: 0 2px 1px #aaa, 0 6px 1px #888, 0 10px 16px rgba(0,0,0, .33);
+	box-shadow: 0 2px 1px #AAA, 0 6px 2px 1px #888, 0 11px 1px 4px rgba(0, 0, 0, .33), inset 0 0 2px 1px #BBB;
 	color: #666;
-	margin: 0px 10px 4px 15px;
+	margin: 0px 10px 10px 10px;
 	vertical-align: bottom;
 }
 
 .Button:active {
 	box-shadow: 0 2px 2px #888, 0 0px 3px #888, 0 3px 8px rgba(0,0,0, .15);
 	border: 0;
-	margin-top: 4px;
-	margin-bottom:  0px;
+	margin-bottom:  6px;
 }
 
 #theFist {
