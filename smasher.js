@@ -153,13 +153,12 @@ $(document).ready(function() {
 					this.data[key].ArtistName + ' - ' + 
 					this.data[key].SongName + '</a><span class="album">'+ 
 					this.data[key].AlbumName+'</span></li>');
-			}	
+			}
 		};
 		
 	var rdio = new iAPI('rdio', 'Rdio', 'http://www.rdio.com');
 		
 		rdio.numResults = function(){
-			//return this.data.result.number_results;
 			return this.items.length;
 		};
 
@@ -179,6 +178,94 @@ $(document).ready(function() {
 				}
 			}
 		};
+
+	var youtube = new iAPI('youtube', 'YouTube', 'http://www.youtube.com');
+
+		youtube.maxResults = 20;
+
+		youtube.note = "YouTube will return a maximum of " + youtube.maxResults + " results.";
+		
+		youtube.numResults = function(){
+			return this.items.length;
+		};
+
+		youtube.endpoint = function() {
+			return('http://gdata.youtube.com/feeds/api/videos?q=' + escape(this.query) + '&orderby=relevance&start-index=1&max-results=' + this.maxResults + '&v=2&alt=json');
+		};
+		
+		youtube.parse = function() {
+			if (!this.data.feed.entry) return;
+			for(key in this.data.feed.entry) {
+				//Filter out bad YouTube video results.
+				var video = this.data.feed.entry[key];
+				if (!this.is_blocked(video) && !this.is_live(video) && this.is_music(video) && !this.is_cover_or_remix(video)) {
+					var videoId = video.id.$t.split(":")[3];
+					var videoTitle = video.title.$t;
+					var videoDescription = video.media$group.media$description.$t;
+					this.items.push('<li><a href="' +
+						'http://www.youtube.com/watch?v=' + videoId + '" target="m">' + videoTitle + '</a>' +
+						'<span class="album">' + videoDescription + '</span></li>');
+				}
+			}
+		};
+
+		// Bunch of YouTube convenience functions borrowed from Tubalr. Thanks Cody - github.com/cjstewart88
+		youtube.is_blocked = function (video) {
+		  var blocked = false;
+
+		  if (video.author[0].name.$t.toLowerCase().search('vevo') >= 0) blocked = true;
+		  if (typeof video.app$control !== "undefined" && video.app$control.yt$state.$t == "Syndication of this video was restricted by the content owner.") blocked = true;
+		  if (typeof video.app$control !== "undefined" && video.app$control.yt$state.$t == "Syndication of this video was restricted by its owner.") blocked = true;
+		  
+		  return blocked;
+		}
+
+		youtube.is_music = function (video) {
+		  var music = true;
+		  
+		  if (video.media$group.media$category[0].$t != "Music") music = false;
+		  
+		  return music;
+		}
+
+		// youtube.is_unique = function (track_name, video) {
+		//   var unique = true
+		  
+		//   $.each(videos, function () {
+		//     if (this.VideoID == video.id.$t.split(":")[3]) unique = false;
+		    
+		//     var tmp_title1 = this.VideoTitle.toLowerCase().replace(/ *\([^)]*\) */g, '').replace(/[^a-zA-Z ]/g, "");
+		//     var tmp_title2 = video.title.$t.toLowerCase().replace(/ *\([^)]*\) */g, '').replace(/[^a-zA-Z ]/g, "");
+		    
+		//     if (tmp_title1 == tmp_title2) unique = false;
+		//   });
+		   
+		//   return unique;
+		// }
+
+		youtube.is_cover_or_remix = function (video) {
+		  var cover_or_remix = false;
+		  
+		  if (video.title.$t.toLowerCase().search("cover") != -1 || video.title.$t.toLowerCase().search("remix") != -1 || video.title.$t.toLowerCase().search("alternate") != -1) cover_or_remix = true;
+		  
+		  return cover_or_remix;
+		}
+
+		youtube.is_live = function (video) {
+		  var live_video = false;
+		  
+		  if (this.query.toLowerCase().search("live") > -1) return live_video;
+		  
+		  if (video.title.$t.toLowerCase().search("live") > -1 || video.title.$t.toLowerCase().search("@") > -1 || video.title.$t.toLowerCase().search("19") > -1 || video.title.$t.toLowerCase().search("200") > -1) live_video = true;
+		  
+		  if (!live_video) {
+		    $.each(video.category, function () {
+		      if (this.term.toLowerCase() == "live") live_video = true;
+		    });
+		  }
+
+		  return live_video
+		}
 	
 	// Set cursor to search box
 	$('#q').focus();
@@ -190,15 +277,21 @@ $(document).ready(function() {
 		var q = $('#q').val(); 
 		
 		// Clean up query - the following are Allowed Characters
-		q = $.trim(q.replace(/[^a-zA-Z0-9����������������������������������������������������������� _\-!$]+/g,'').substring(0,80));
+		q = $.trim(q.replace(/[^\w\u00C0-\u017E\-!$]+/g,' ').substring(0,80));
 		if(q == '') return false;
 		
 		// Wait 2.5 seconds before allowing another submission
 		if (waiting == true) { console.log("wait!"); return false; } 
 		setTimeout(function(){ waiting = false; console.log("ready"); }, 2500);
 		
+		// Switch to full view
+		$('body').removeClass("centered");
+		
 		// Don't duplicate search
-		if(q == lastsearch) { console.log("cancelling repeat search"); return false; } 
+		if(q == lastsearch) { 
+			console.log("cancelling repeat search"); 
+			return false; 
+		}
 		
 		try {
 			spotify.submit(q);
@@ -207,6 +300,7 @@ $(document).ready(function() {
 			soundcloud.submit(q);
 			mog.submit(q);
 			bandcamp.submit(q);
+			youtube.submit(q);
 			lastsearch = q;
 			waiting = true;
 			appRouter.navigate(q.replace(/[ -]+/g,"-")); 	// query to URL
@@ -225,13 +319,15 @@ $(document).ready(function() {
 	spotify.addToDOM();
 	grooveshark.addToDOM();
 	soundcloud.addToDOM();
+	youtube.addToDOM();
 	mog.addToDOM();
 	bandcamp.addToDOM();
 	
 	// Empower fist
-	$('#q').keydown(function(event) { if (event.keyCode == '13') { event.stopPropagation(); smash(); $('#qform').submit(); } });
-	$('.Button').mousedown(function() { smash(); });
-	$('#theFist').mouseup(function() { $('#qform').submit(); }); // Incase the Fist steals the mouseup event
+	//$('#q').keydown(function(event) { if (event.keyCode == '13') { event.stopPropagation(); smash(); $('#qform').submit(); } });
+	//$('.Button').mousedown(function() { smash(); });
+	//$('#theFist').mouseup(function() { $('#qform').submit(); }); // Incase the Fist steals the mouseup event
+	$('#q').keydown(function(event) { if (event.keyCode == '13') { event.stopPropagation(); $('#qform').submit(); } });
 	
 	// Define URL to Method routing
 	var AppRouter = Backbone.Router.extend({
@@ -241,10 +337,15 @@ $(document).ready(function() {
 		},
 		
 		search: function(query) {
-			query = query.replace(/[ -]+/g," "); 			// URL to query
-			console.log("[Router] search:",query);
-			$('#q').val(query);
-			$('#qform').submit();
+			if(!query) {
+				$('body').addClass("centered");
+			} else {
+				$('body').removeClass("centered");
+				query = query.replace(/[ -]+/g," "); 			// URL to query
+				console.log("[Router] search:",query);
+				$('#q').val(query);
+				$('#qform').submit();
+			}
 		}
 	});
 	
@@ -252,27 +353,27 @@ $(document).ready(function() {
 	var appRouter = new AppRouter;
 	
 	// Start history and routing
-	console.log("backbone history start",   Backbone.history.start()   );
+	console.log("backbone history start",   Backbone.history.start({ pushState: true, root: "/" }));
 
 });
 
-// Fist Smash
-function smash() {
-	try {
-		document.getElementById('punch').play();
-	} catch(e) {
-		console.log(e);
-	}
+// // Fist Smash
+// function smash() {
+// 	try {
+// 		document.getElementById('punch').play();
+// 	} catch(e) {
+// 		console.log(e);
+// 	}
 	
-	$('#theFist').show();
-	$('#theFist').offset({ top: 0 - $('#theFist').height(), left: $('.Button').offset().left });
-	$('#theFist').animate({ 
-		top: $('.Button').offset().top + $('.Button').height() + 24 - $('#theFist').height() }, 
-		60, 
-		'linear', 
-		function() { $('#theFist').animate({ top: 0 - $('#theFist').height() }, 320); }
-	);
-}
+// 	$('#theFist').show();
+// 	$('#theFist').offset({ top: 0 - $('#theFist').height(), left: $('.Button').offset().left });
+// 	$('#theFist').animate({ 
+// 		top: $('.Button').offset().top + $('.Button').height() + 24 - $('#theFist').height() }, 
+// 		60, 
+// 		'linear', 
+// 		function() { $('#theFist').animate({ top: 0 - $('#theFist').height() }, 320); }
+// 	);
+// }
 
 function iAPI(name, nicename, url){
 	// Properties
@@ -293,7 +394,7 @@ function iAPI(name, nicename, url){
 			<a href="' + this.apiURL + '" target="_blank"><img src="images/' + this.apiName + '.png" class="logo"></a> \
 			' + this.apiNiceName + ' <span class="num-results"></span></h2> \
 			<div class="loading"> \
-				<img src="images/ajax_loading.gif"> \
+				<img class="spinner" src="images/spinner.gif"> \
 				<div class="refresh">Refresh <img src="images/refresh.png"></div> \
 			</div> \
 			<div class="note">' + this.note + '</div> \
