@@ -1,0 +1,6 @@
+# not a file or directory
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule .* index.php [QSA,L,NE,NC]
+# note: this rule means a request for /not/a/file will produce index.php with broken images
