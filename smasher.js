@@ -111,22 +111,22 @@ $(document).ready(function() {
 					var albums = data[artist_id].discography;
 					for(var key in albums) {
 						var album_id = albums[key].album_id;
-						var Artist = albums[key].artist;
+						var artist = albums[key].artist;
 
-						var ArtistURL = albums[key].url.substr(0,albums[key].url.indexOf("/album/"));
+						var artistUrl = albums[key].url.substr(0,albums[key].url.indexOf("/album/"));
 						
 						var url = ep + "/album/2/info?callback=?&album_id=" + album_id + "&key=" + apikey;
 						
 						var ajax = $.getJSON(url, function(data) {
-							var Album = data.title;
+							var album = data.title;
 							for(var key in data.tracks) {
-								var Track = data.tracks[key].title;
-								var URL = ArtistURL + data.tracks[key].url;
+								var track = data.tracks[key].title;
+								var url = artistUrl + data.tracks[key].url;
 								self.items.push(new Track(
-									URL,
-									Artist,
-									Track,
-									Album
+									url,
+									artist,
+									track,
+									album
 								));
 							}
 							self.updateDOM();
@@ -438,13 +438,24 @@ function iAPI(name, nicename, url){
 }
 
 var instantListen = {
+	// For now, instant listening is a fun race...
+	// the callbacks notify the instantListen guy when they come in,
+	// and the first result to meet some criteria
+	// (i.e. can be instant played and matches query in the artist + track title)
+	// gets activated immediately.
+	// If all the callbacks come in and nobody won the race,
+	// then fallback and do anything possible to just play a song.
 	_query: '',
 
 	setQuery: function(query) {
 		this._query = query;
 	},
 
-	notify: function(resultsArray) {
+	notify: function(items) {
+
+	},
+
+	score: function(item) {
 
 	}
 
