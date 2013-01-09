@@ -41,7 +41,7 @@ Date: February 12, 2011
       Music&#8202;Smasher
     </a></h1>
     <div class="tagline">Find Any Song.</div>
-  	<input id="q"/>
+    <input id="q"/>
     <!-- <input type="submit" class="Button" value="Smash"/> -->
     <div class="logos">
       <img src="images/logos_white_retina.png">
@@ -59,13 +59,26 @@ Date: February 12, 2011
   <div id="services"></div>
 
   <div class="footer">
-  	by <a href="http://www.mattmontag.com">Matt Montag</a>
+    by <a href="http://www.mattmontag.com">Matt Montag</a>
   </div>
 </div>
-  <? /*
-  <span id="theFist" style="x-display:none"><img src="<?= $app_path ?>/images/fist.png"></span>
-  <audio id="punch" preload="auto" src="<?= $app_path ?>/punch.wav"></audio>
-  */ ?>
-
+<!-- Templates -->
+<script type="text/template" id="tpl-track">
+  <li><a href="{{ url }}" target="m">{% if (artist) { %}{{ artist }} - {% } %}{{ track }}</a>
+  <span class="album">{{ album }}</span></li>
+</script>
+<script type="text/template" id="tpl-service">
+  <div class="col" id="{{ apiName }}">
+    <h2>
+    <a href="{{ apiURL }}" target="_blank"><img src="images/{{ apiName }}.png" class="logo"></a>
+    {{ apiNiceName }}<span class="num-results"></span></h2>
+    <div class="loading">
+      <img class="spinner" src="images/spinner.gif">
+      <div class="refresh">Refresh <img src="images/refresh.png"></div>
+    </div>
+    <div class="note">{{ note }}</div>
+    <div class="results"></div>
+  </div>
+</script>
 </body>
 </html>
