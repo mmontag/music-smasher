@@ -71,7 +71,7 @@ Date: February 12, 2011
   <div class="col" id="{{ apiName }}">
     <h2>
     <a href="{{ apiURL }}" target="_blank"><img src="images/{{ apiName }}.png" class="logo"></a>
-    {{ apiNiceName }}<span class="num-results"></span></h2>
+    {{ apiNiceName }} <span class="num-results"></span></h2>
     <div class="loading">
       <img class="spinner" src="images/spinner.gif">
       <div class="refresh">Refresh <img src="images/refresh.png"></div>
