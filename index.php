@@ -10,7 +10,8 @@ Date: February 12, 2011
 <html>
 <head>
   <title>Music Smasher</title>
-  <meta property="fb:admins" content="16903206" />
+  <base href="http://<?= $_SERVER['HTTP_HOST'] ?>"/>
+  <meta property="fb:admins" content="16903206"/>
   <link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="<?= $app_path ?>/smasher.css">
   <script type="text/javascript">

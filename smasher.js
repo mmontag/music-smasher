@@ -59,15 +59,23 @@ $(document).ready(function() {
 		// Why yes, and it would also be fairly easy to burn your neighbor's house down. I trust that you won't do these things.
 		// Music Smasher is fast because most of the API requests are sent directly to the service provider, instead of first
 		// going through a proxy in order to hide an API key. Let's keep it that way!
+
+		soundcloud.canInstantPlay = function() { return true; };
 		
 		soundcloud.endpoint = function() {
 			return('http://api.soundcloud.com/tracks.json?q=' + this.query + '&client_id=f7def983532e3e44229d757cdab43cbe');
+		};
+
+		soundcloud.autoplayUrl = function(id) {
+			return "https://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F" + 
+				id + "&amp;color=ff6600&amp;auto_play=true&amp;show_artwork=true";
 		};
 		
 		soundcloud.parse = function() {
 			for(var key in this.data) {
 				this.items.push(new Track(
-					this.data[key].permalink_url,
+					//this.data[key].permalink_url,
+					this.autoplayUrl(this.data[key].id),
 					null,
 					this.data[key].title,
 					this.data[key].user.username
@@ -141,6 +149,8 @@ $(document).ready(function() {
 		//grooveshark.note = "Down for maintenance. Will be back by midnight PST.";
 		grooveshark.note = "Grooveshark will return a maximum of 15 results.";
 
+		grooveshark.canInstantPlay = function() { return true; };
+
 		grooveshark.endpoint = function() {
 			return('proxy.php?mode=native&url='+escape('http://tinysong.com/s/' + escape(this.query) + '?format=json&limit=32'));
 		};
@@ -185,6 +195,8 @@ $(document).ready(function() {
 		youtube.maxResults = 20;
 
 		youtube.note = "YouTube will return a maximum of " + youtube.maxResults + " results.";
+
+		youtube.canInstantPlay = function() { return true; };
 		
 		youtube.numResults = function(){
 			return this.items.length;
@@ -294,6 +306,7 @@ $(document).ready(function() {
 		}
 
 		try {
+			// TODO: iterate over registered services
 			spotify.submit(q);
 			rdio.submit(q);
 			grooveshark.submit(q);
@@ -303,6 +316,7 @@ $(document).ready(function() {
 			youtube.submit(q);
 			lastsearch = q;
 			waiting = true;
+			// TODO: preserve parameter /now
 			appRouter.navigate(q.replace(/[ -]+/g,"-")); // query to URL (see below)
 		} catch(e) {
 			console.log(e);
@@ -315,6 +329,8 @@ $(document).ready(function() {
 	};
 	
 	// Create each service result container in DOM
+	// TODO: each service should register itself
+	// TODO: iterate over registered services
 	rdio.addToDOM();
 	spotify.addToDOM();
 	grooveshark.addToDOM();
@@ -329,10 +345,14 @@ $(document).ready(function() {
 	var AppRouter = Backbone.Router.extend({
 		
 		routes: {
-			"*query":	"search"
+			":query": "search",
+			":query/:instant":	"search"
 		},
 		
-		search: function(query) {
+		search: function(query, instant) {
+			instant = (instant + '').toLowerCase();
+			instantListen.enabled = instant === 'now';
+
 			if(!query) {
 				$('body').addClass("centered");
 			} else {
@@ -354,10 +374,10 @@ $(document).ready(function() {
 });
 
 function Track(url, artist, track, album) {
-	this.url = url;
-	this.artist = artist;
-	this.track = track;
-	this.album = album;
+	this.url = url || '';
+	this.artist = artist || '';
+	this.track = track || '';
+	this.album = album || '';
 }
 
 function iAPI(name, nicename, url){
@@ -389,6 +409,9 @@ function iAPI(name, nicename, url){
 		console.log(this.apiName + ' submit');
 				
 		this.query = query;
+		
+		instantListen.setQuery(query);
+
 		this.items = [];
 		$('#'+this.apiName+' .note').hide();
 		$('#'+this.apiName+' .loading').show();
@@ -418,6 +441,11 @@ function iAPI(name, nicename, url){
 			$('<p>No results found.</p>').appendTo('#'+this.apiName+' .results');
 		} else {
 			this.updateDOM();
+			if (instantListen.enabled === true && this.canInstantPlay() === true) {
+				// Notify the instant play manager that there is some new stuff to evaluate,
+				// and one of the tracks will be good enough to play immediately.
+				instantListen.notify(this.items);
+			}
 		}
 	};
 
@@ -432,6 +460,7 @@ function iAPI(name, nicename, url){
 	};
 
 	// Abstract methods
+	this.canInstantPlay = function(){};
 	this.endpoint = function(){};
 	this.parse = function(){};
 	this.playTrack = function(){};
@@ -446,20 +475,73 @@ var instantListen = {
 	// If all the callbacks come in and nobody won the race,
 	// then fallback and do anything possible to just play a song.
 	_query: '',
+	_allItems: [],
+	enabled: true,
 
 	setQuery: function(query) {
 		this._query = query;
 	},
 
 	notify: function(items) {
+		// store reference to all items for fallback mode
+		this._allItems = this._allItems.concat(items);
 
+		// TODO: replace all iterators with underscore shortcuts
+		for(var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if(this.isGreatMatch(item)) {
+				this.activate(item);
+			}
+		}
 	},
 
-	score: function(item) {
+	notifyDone: function() {
+		for(var i = 0; i < this._allItems.length; i++) {
+			var item = this._allItems[i];
+			if(this.isGoodMatch(item)) {
+				this.activate(item);
+			}
+		}
+	},
 
+	isGreatMatch: function(item) {
+		// All query words appear, in order, in the artist + track string
+		var itemWords = (item.artist + ' ' + item.track).toLowerCase().replace(/[^a-z0-9 ]/gi,'').split(' ');
+		var queryWords = this._query.toLowerCase().replace(/[^a-z0-9 ]/gi,'').split(' ');
+
+		// Scan item words in order
+		while (itemWords.length) {
+			if (itemWords.shift().trim() === queryWords[0].trim()) {
+				// Remove the matched query word
+				queryWords.shift();
+			}
+			if (queryWords.length === 0) {
+				// The query words have all been matched
+				return true;
+			}
+		}
+		return false;
+	},
+
+	isGoodMatch: function(item) {
+		var itemWords = (item.artist + ' ' + item.track).toLowerCase().replace(/[^a-z0-9 ]/gi,'').split(' ');
+		var queryWords = this._query.toLowerCase().replace(/[^a-z0-9 ]/gi,'').split(' ');
+
+		// All query words appear in any order
+		while (queryWords.length) {
+			if (itemWords.indexOf(queryWords.shift()) === -1) {
+				return false;
+			}
+		}
+		return true;
+	},
+
+	activate: function(item) {
+		document.location = item.url;
 	}
-
 };
+$(document).ajaxStop(instantListen.notifyDone.bind(instantListen));
+
 
 // Underscore template setup: use Mustache.js {{ }} style templates
 // http://underscorejs.org/#template
