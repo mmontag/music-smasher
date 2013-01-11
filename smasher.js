@@ -66,19 +66,19 @@ $(document).ready(function() {
 			return('http://api.soundcloud.com/tracks.json?q=' + this.query + '&client_id=f7def983532e3e44229d757cdab43cbe');
 		};
 
-		soundcloud.autoplayUrl = function(id) {
-			return "https://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F" + 
+		soundcloud.autoPlayUrl = function(id) {
+			return "https://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F" +
 				id + "&amp;color=ff6600&amp;auto_play=true&amp;show_artwork=true";
 		};
 		
 		soundcloud.parse = function() {
 			for(var key in this.data) {
 				this.items.push(new Track(
-					//this.data[key].permalink_url,
-					this.autoplayUrl(this.data[key].id),
+					this.data[key].permalink_url,
 					null,
 					this.data[key].title,
-					this.data[key].user.username
+					this.data[key].user.username,
+					this.autoPlayUrl(this.data[key].id)
 				));
 			}
 		};
@@ -98,7 +98,7 @@ $(document).ready(function() {
 		
 		bandcamp.parse = function() {
 			
-			// YUCK. Bandcamp, you can do better than this
+			// The Bandcamp API could be much better.
 
 			var apikey = "drepradstrendirheinbryni";
 			var ep = "http://api.bandcamp.com/api";
@@ -172,6 +172,8 @@ $(document).ready(function() {
 			return this.items.length;
 		};
 
+		rdio.canInstantPlay = function() { return true; };
+
 		rdio.endpoint = function() {
 			return('oauthproxy.php?api=rdio&query=' + this.query);
 		};
@@ -184,7 +186,8 @@ $(document).ready(function() {
 						this.data.result.results[key].shortUrl,
 						this.data.result.results[key].artist,
 						this.data.result.results[key].name,
-						this.data.result.results[key].album
+						this.data.result.results[key].album,
+						this.data.result.results[key].embedUrl + '?autoplay'
 					));
 				}
 			}
@@ -213,13 +216,12 @@ $(document).ready(function() {
 				var video = this.data.feed.entry[key];
 				if (!this.is_blocked(video) && !this.is_live(video) && this.is_music(video) && !this.is_cover_or_remix(video)) {
 					var videoId = video.id.$t.split(":")[3];
-					var videoTitle = video.title.$t;
-					var videoDescription = video.media$group.media$description.$t;
 					this.items.push(new Track(
 						'http://www.youtube.com/watch?v=' + videoId,
 						null,
-						videoTitle,
-						videoDescription
+						video.title.$t,
+						video.media$group.media$description.$t,
+						'http://www.youtube.com/embed/' + videoId + '?autoplay=1'
 					));
 				}
 			}
@@ -373,12 +375,17 @@ $(document).ready(function() {
 
 });
 
-function Track(url, artist, track, album) {
+function Track(url, artist, track, album, autoPlayUrl) {
 	this.url = url || '';
 	this.artist = artist || '';
 	this.track = track || '';
 	this.album = album || '';
+	this.autoPlayUrl = autoPlayUrl || '';
 }
+
+Track.prototype.getBestAutoPlayUrl = function() {
+	return this.autoPlayUrl || this.url;
+};
 
 function iAPI(name, nicename, url){
 	// Properties
@@ -537,10 +544,26 @@ var instantListen = {
 	},
 
 	activate: function(item) {
-		document.location = item.url;
+		this.activateUrl(item.getBestAutoPlayUrl());
+	},
+
+	activateUrl: function(url) {
+		$('.playContainer').show();
+		$('.playContainerSpacer').show();
+		$('.playFrame').attr('src', url);
 	}
 };
 $(document).ajaxStop(instantListen.notifyDone.bind(instantListen));
+
+$('a').live('click', function(e) {
+	var autoplayurl = $(e.target).data('autoplayurl');
+	if(autoplayurl) {
+		e.stopPropagation();
+		e.preventDefault();
+		instantListen.activateUrl(autoplayurl);
+		//$('.playFrame').attr('src', apu);
+	}
+});
 
 
 // Underscore template setup: use Mustache.js {{ }} style templates
