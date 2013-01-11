@@ -307,12 +307,25 @@ a:hover {
 	margin-bottom:  6px;
 }
 
-#theFist {
+.playContainer, .playContainerSpacer {
 	display: none;
-	position: absolute;
-	top: -500px;
+	height: 180px;
+	clear: both;
 }
 
-#punch {
-	display: none;
+.playContainer {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	background: url(images/gray_paper.gif);
+	box-shadow: 0px -1px 13px 0 rgba(0, 0, 0, 0.1);
+	border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.playFrame {
+	position: absolute;
+	border: 0;
+	width: 100%;
+	bottom: 0;
+	height: 175px;
 }
