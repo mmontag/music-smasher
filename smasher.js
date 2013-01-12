@@ -483,7 +483,7 @@ var instantListen = {
 	// then fallback and do anything possible to just play a song.
 	_query: '',
 	_allItems: [],
-	enabled: true,
+	enabled: false,
 
 	setQuery: function(query) {
 		this._query = query;
