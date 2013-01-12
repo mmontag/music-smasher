@@ -309,7 +309,7 @@ a:hover {
 
 .playContainer, .playContainerSpacer {
 	display: none;
-	height: 180px;
+	height: 216px;
 	clear: both;
 }
 
@@ -326,6 +326,6 @@ a:hover {
 	position: absolute;
 	border: 0;
 	width: 100%;
-	bottom: 0;
-	height: 175px;
+	bottom: 0px;
+	height: 205px; /* youtube min embed height = 200px */
 }
