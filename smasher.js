@@ -21,10 +21,10 @@ $(document).ready(function() {
 					artistString = artistString + this.data.tracks[key].artists[key2].name;
 				}
 				this.items.push(new Track(
-					this.data.tracks[key].href,
 					artistString,
 					this.data.tracks[key].name,
-					this.data.tracks[key].album.name
+					this.data.tracks[key].album.name,
+					this.data.tracks[key].href
 				));
 			}
 		};
@@ -45,10 +45,10 @@ $(document).ready(function() {
 			for(var key in this.data.tracks) {
 
 				this.items.push(new Track(
-					"http://mog.com/tracks/mn" + this.data.tracks[key].track_id,
 					this.data.tracks[key].artist_name,
 					this.data.tracks[key].album_name,
-					this.data.tracks[key].track_name
+					this.data.tracks[key].track_name,
+					"http://mog.com/tracks/mn" + this.data.tracks[key].track_id
 				));
 			}
 		};
@@ -74,10 +74,10 @@ $(document).ready(function() {
 		soundcloud.parse = function() {
 			for(var key in this.data) {
 				this.items.push(new Track(
-					this.data[key].permalink_url,
 					null,
 					this.data[key].title,
 					this.data[key].user.username,
+					this.data[key].permalink_url,
 					this.autoPlayUrl(this.data[key].id)
 				));
 			}
@@ -131,10 +131,10 @@ $(document).ready(function() {
 								var track = data.tracks[key].title;
 								var url = artistUrl + data.tracks[key].url;
 								self.items.push(new Track(
-									url,
 									artist,
 									track,
-									album
+									album,
+									url
 								));
 							}
 							self.updateDOM();
@@ -158,10 +158,10 @@ $(document).ready(function() {
 		grooveshark.parse = function() {
 			for(var key in this.data) {
 				this.items.push(new Track(
-					this.data[key].Url,
 					this.data[key].ArtistName,
 					this.data[key].SongName,
-					this.data[key].AlbumName
+					this.data[key].AlbumName,
+					this.data[key].Url
 				));
 			}
 		};
@@ -183,10 +183,10 @@ $(document).ready(function() {
 				//Rdio search includes results that are unavailable for streaming. I don't show them.
 				if(this.data.result.results[key].canDownload || this.data.result.results[key].canSample) {
 					this.items.push(new Track(
-						this.data.result.results[key].shortUrl,
 						this.data.result.results[key].artist,
 						this.data.result.results[key].name,
 						this.data.result.results[key].album,
+						this.data.result.results[key].shortUrl,
 						this.data.result.results[key].embedUrl + '?autoplay'
 					));
 				}
@@ -217,10 +217,10 @@ $(document).ready(function() {
 				if (!this.is_blocked(video) && !this.is_live(video) && this.is_music(video) && !this.is_cover_or_remix(video)) {
 					var videoId = video.id.$t.split(":")[3];
 					this.items.push(new Track(
-						'http://www.youtube.com/watch?v=' + videoId,
 						null,
 						video.title.$t,
 						video.media$group.media$description.$t,
+						'http://www.youtube.com/watch?v=' + videoId,
 						'http://www.youtube.com/embed/' + videoId + '?autoplay=1'
 					));
 				}
@@ -353,7 +353,7 @@ $(document).ready(function() {
 		
 		search: function(query, instant) {
 			instant = (instant + '').toLowerCase();
-			instantListen.enabled = instant === 'now';
+			instantListen.enabled = (instant === 'now');
 
 			if(!query) {
 				$('body').addClass("centered");
@@ -375,17 +375,17 @@ $(document).ready(function() {
 
 });
 
-function Track(url, artist, track, album, autoPlayUrl) {
-	this.url = url || '';
+function doNothing() {}
+
+function Track(artist, track, album, url, autoPlayUrl, activationCallback) {
 	this.artist = artist || '';
 	this.track = track || '';
 	this.album = album || '';
+	this.url = url || '';
 	this.autoPlayUrl = autoPlayUrl || '';
+	// Each service can have a unique activation setup process
+	this.activationCallback = activationCallback || iAPI.activate;
 }
-
-Track.prototype.getBestAutoPlayUrl = function() {
-	return this.autoPlayUrl || this.url;
-};
 
 function iAPI(name, nicename, url){
 	// Properties
@@ -393,6 +393,7 @@ function iAPI(name, nicename, url){
 	this.apiName = name;
 	this.apiURL = url;
 	this.items = []; //array of tracks
+	// TODO: get rid of this.data; pass thru from callback to parse, use this.items for count
 	this.data = [];  //JSON parsed data structure - not normalized, and different for every service
 	this.query = "";
 	this.note = "";
@@ -449,24 +450,50 @@ function iAPI(name, nicename, url){
 		} else {
 			this.updateDOM();
 			if (instantListen.enabled === true && this.canInstantPlay() === true) {
-				// Notify the instant play manager that there is some new stuff to evaluate,
-				// and one of the tracks will be good enough to play immediately.
+				// Notify the instant play manager that there is some new stuff to evaluate;
+				// see if one of the tracks will be good enough to play immediately.
 				instantListen.notify(this.items);
 			}
 		}
 	};
 
-	// Re-renders entire list of items
+	// Renders list of items
 	this.updateDOM = function(){
 		$('#'+this.apiName+' .num-results').html(this.numResults() + ' Results');
-		var htmlItems = [];
+
+		var ul = $('<ul class="result-list"></ul>');
 		for(var i = 0, length = this.items.length; i < length; i++) {
-			htmlItems.push(this.itemTemplate(this.items[i]));
+			// create <li> node from template
+			var li = $(this.itemTemplate(this.items[i]));
+			// add click handler
+			li.find('a').bind('click', this.activate.bind(this)); // TODO: don't use bind
+			// add to dom fragment
+			ul.append(li);
 		}
-		$('#'+this.apiName+' .results').html('<ul class="result-list">' + htmlItems.join('') + '</ul>');
+		$('#'+this.apiName+' .results').append(ul);
 	};
 
-	// Abstract methods
+	this.activate = function(event) {
+		if(event && this.canInstantPlay()) {
+			event.stopPropagation();
+			event.preventDefault();
+			var autoplayurl = $(event.target).data('autoplayurl');
+			this.activateUrl(autoplayurl);
+		}
+	};
+
+	this.activateUrl = function(url) {
+		$('.playContainer').show();
+		$('.playContainerSpacer').show();
+		$('.playFrame').attr('src', url);
+	};
+
+	this.deactivate = function() {
+		$('.playContainer').hide();
+		$('.playContainerSpacer').hide();
+		$('.playFrame').attr('src', '');
+	};
+
 	this.canInstantPlay = function(){};
 	this.endpoint = function(){};
 	this.parse = function(){};
@@ -474,13 +501,13 @@ function iAPI(name, nicename, url){
 }
 
 var instantListen = {
-	// For now, instant listening is a fun race...
+	// For now, instant listening is a race.
 	// the callbacks notify the instantListen guy when they come in,
 	// and the first result to meet some criteria
 	// (i.e. can be instant played and matches query in the artist + track title)
 	// gets activated immediately.
-	// If all the callbacks come in and nobody won the race,
-	// then fallback and do anything possible to just play a song.
+	// If all the callbacks come in and no links qualify for instant play,
+	// then fallback to less demanding criteria.
 	_query: '',
 	_allItems: [],
 	enabled: false,
@@ -497,7 +524,7 @@ var instantListen = {
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if(this.isGreatMatch(item)) {
-				this.activate(item);
+				item.activateCallback(item.autoPlayUrl);
 			}
 		}
 	},
@@ -506,7 +533,7 @@ var instantListen = {
 		for(var i = 0; i < this._allItems.length; i++) {
 			var item = this._allItems[i];
 			if(this.isGoodMatch(item)) {
-				this.activate(item);
+				item.activateCallback(item.autoPlayUrl);
 			}
 		}
 	},
@@ -541,30 +568,9 @@ var instantListen = {
 			}
 		}
 		return true;
-	},
-
-	activate: function(item) {
-		this.activateUrl(item.getBestAutoPlayUrl());
-	},
-
-	activateUrl: function(url) {
-		$('.playContainer').show();
-		$('.playContainerSpacer').show();
-		$('.playFrame').attr('src', url);
 	}
 };
 $(document).ajaxStop(instantListen.notifyDone.bind(instantListen));
-
-$('a').live('click', function(e) {
-	var autoplayurl = $(e.target).data('autoplayurl');
-	if(autoplayurl) {
-		e.stopPropagation();
-		e.preventDefault();
-		instantListen.activateUrl(autoplayurl);
-		//$('.playFrame').attr('src', apu);
-	}
-});
-
 
 // Underscore template setup: use Mustache.js {{ }} style templates
 // http://underscorejs.org/#template
@@ -578,8 +584,31 @@ _.templateSettings = {
 var waiting = false;
 var lastsearch = '';
 
-// Browser shim stuff
+// Console shim
 window.console||(window.console={log:function(){}}); //console.log bypass for older browsers
+
+// Bind shim
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (oThis) {
+    if (typeof this !== "function") {
+      // closest thing possible to the ECMAScript 5 internal IsCallable function
+      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+    }
+ 
+    var aArgs = Array.prototype.slice.call(arguments, 1),
+        fToBind = this,
+        fNOP = function () {},
+        fBound = function () {
+          return fToBind.apply(this instanceof fNOP && oThis ? this : oThis,
+                               aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+ 
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+ 
+    return fBound;
+  };
+}
 
 // IE8/9 CORS cross-domain requests compatibility
 // https://github.com/jaubourg/ajaxHooks/blob/master/src/ajax/xdr.js

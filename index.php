@@ -74,8 +74,10 @@ Date: February 12, 2011
 </div>
 <!-- Templates -->
 <script type="text/template" id="tpl-track">
-  <li><a href="{{ url }}" data-autoplayurl="{{ autoPlayUrl }}" target="m">{% if (artist) { %}{{ artist }} - {% } %}{{ track }}</a>
-  <span class="album">{{ album }}</span></li>
+  <li>
+    <a href="{{ url }}" data-autoplayurl="{{ autoPlayUrl }}" target="m">{% if (artist) { %}{{ artist }} - {% } %}{{ track }}</a>
+    <span class="album">{{ album }}</span>
+  </li>
 </script>
 <script type="text/template" id="tpl-service">
   <div class="col" id="{{ apiName }}">
