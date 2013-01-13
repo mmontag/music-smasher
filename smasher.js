@@ -95,7 +95,7 @@ $(document).ready(function() {
 		};
 
 		soundcloud.autoPlayUrl = function(id) {
-			return "https://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F" +
+			return "http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F" +
 				id + "&amp;color=ff6600&amp;auto_play=true&amp;show_artwork=true";
 		};
 		
