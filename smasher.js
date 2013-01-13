@@ -24,7 +24,9 @@ $(document).ready(function() {
 					artistString,
 					this.data.tracks[key].name,
 					this.data.tracks[key].album.name,
-					this.data.tracks[key].href
+					this.data.tracks[key].href,
+					null,
+					this.activateUrl
 				));
 			}
 		};
@@ -48,7 +50,9 @@ $(document).ready(function() {
 					this.data.tracks[key].artist_name,
 					this.data.tracks[key].album_name,
 					this.data.tracks[key].track_name,
-					"http://mog.com/tracks/mn" + this.data.tracks[key].track_id
+					"http://mog.com/tracks/mn" + this.data.tracks[key].track_id,
+					null,
+					this.activateUrl
 				));
 			}
 		};
@@ -78,7 +82,8 @@ $(document).ready(function() {
 					this.data[key].title,
 					this.data[key].user.username,
 					this.data[key].permalink_url,
-					this.autoPlayUrl(this.data[key].id)
+					this.autoPlayUrl(this.data[key].id),
+					this.activateUrl
 				));
 			}
 		};
@@ -134,7 +139,9 @@ $(document).ready(function() {
 									artist,
 									track,
 									album,
-									url
+									url,
+									null,
+									this.activateUrl
 								));
 							}
 							self.updateDOM();
@@ -161,7 +168,9 @@ $(document).ready(function() {
 					this.data[key].ArtistName,
 					this.data[key].SongName,
 					this.data[key].AlbumName,
-					this.data[key].Url
+					this.data[key].Url,
+					null,
+					this.activateUrl
 				));
 			}
 		};
@@ -187,7 +196,8 @@ $(document).ready(function() {
 						this.data.result.results[key].name,
 						this.data.result.results[key].album,
 						this.data.result.results[key].shortUrl,
-						this.data.result.results[key].embedUrl + '?autoplay'
+						this.data.result.results[key].embedUrl + '?autoplay',
+						this.activateUrl
 					));
 				}
 			}
@@ -221,7 +231,8 @@ $(document).ready(function() {
 						video.title.$t,
 						video.media$group.media$description.$t,
 						'http://www.youtube.com/watch?v=' + videoId,
-						'http://www.youtube.com/embed/' + videoId + '?autoplay=1'
+						'http://www.youtube.com/embed/' + videoId + '?autoplay=1',
+						this.activateUrl
 					));
 				}
 			}
@@ -384,7 +395,7 @@ function Track(artist, track, album, url, autoPlayUrl, activationCallback) {
 	this.url = url || '';
 	this.autoPlayUrl = autoPlayUrl || '';
 	// Each service can have a unique activation setup process
-	this.activationCallback = activationCallback || iAPI.activate;
+	this.activationCallback = activationCallback || iAPI.activateUrl;
 }
 
 function iAPI(name, nicename, url){
@@ -524,7 +535,7 @@ var instantListen = {
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if(this.isGreatMatch(item)) {
-				item.activateCallback(item.autoPlayUrl);
+				item.activationCallback(item.autoPlayUrl);
 			}
 		}
 	},
@@ -533,7 +544,7 @@ var instantListen = {
 		for(var i = 0; i < this._allItems.length; i++) {
 			var item = this._allItems[i];
 			if(this.isGoodMatch(item)) {
-				item.activateCallback(item.autoPlayUrl);
+				item.activationCallback(item.autoPlayUrl);
 			}
 		}
 	},
