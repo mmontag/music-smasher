@@ -387,6 +387,14 @@ $(document).ready(function() {
 	bandcamp.addToDOM();
 	
 	$('#q').keydown(function(event) { if (event.keyCode == '13') { event.stopPropagation(); $('#qform').submit(); } });
+	$('.playContainer .closeButton').bind('click', function() {
+		Player.unloadCurrentTrack();
+		$('.playContainer').hide();
+		$('.playFrame').attr('src', '');
+	});
+	$('.playContainer .minimizeButton').bind('click', function() {
+		$('.playContainer').toggleClass('minimized');
+	});
 	
 	// Define URL to Method routing
 	var AppRouter = Backbone.Router.extend({

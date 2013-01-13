@@ -69,6 +69,9 @@ Date: February 12, 2011
   </div>
   <div class="playContainerSpacer"></div>
   <div class="playContainer">
+    <span class="info"></span>
+    <span class="minimizeButton"><img src="images/minimize.png" width="11" height="11"></span>
+    <span class="closeButton"><img src="images/close.png" width="11" height="11"></span>
     <iframe class="playFrame" name="playFrame"></iframe>
   </div>
 </div>

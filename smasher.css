@@ -309,7 +309,7 @@ a:hover {
 
 .playContainer, .playContainerSpacer {
 	display: none;
-	height: 216px;
+	height: 196px;
 	clear: both;
 }
 
@@ -317,15 +317,37 @@ a:hover {
 	position: fixed;
 	width: 100%;
 	bottom: 0;
-	background: url(images/gray_paper.gif);
+	background: url(images/black_paper.gif);
 	box-shadow: 0px -1px 13px 0 rgba(0, 0, 0, 0.1);
 	border-top: 1px solid rgba(0,0,0,0.1);
 }
 
+.playContainer .minimizeButton {
+	position: absolute;
+	top: 10px;
+	right: 33px;
+	cursor: pointer;
+}
+
+.playContainer .closeButton {
+	position: absolute;
+	top: 10px;
+	right: 11px;
+	cursor: pointer;
+}
+
+.playContainer.minimized {
+	height: 31px;
+}
+
+.playContainer.minimized .playFrame {
+	visibility: hidden;
+}
+
 .playFrame {
 	position: absolute;
+	top: 31px;
 	border: 0;
 	width: 100%;
-	bottom: 0px;
-	height: 205px; /* youtube min embed height = 200px */
+	height: 165px;
 }
