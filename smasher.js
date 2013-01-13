@@ -580,13 +580,20 @@ var instantListen = {
 	// then fallback to less demanding criteria.
 	_query: '',
 	_allItems: [],
+	_complete: false,
 	enabled: false,
 
 	setQuery: function(query) {
+		this._complete = false;
 		this._query = query;
 	},
 
 	notify: function(items) {
+		// If already found a match, ignore subsequent callbacks until new query
+		if (this._complete) {
+			return;
+		}
+
 		// store reference to all items for fallback mode
 		this._allItems = this._allItems.concat(items);
 
@@ -595,6 +602,8 @@ var instantListen = {
 			var item = items[i];
 			if(this.isGreatMatch(item)) {
 				item.activationCallback(item.autoPlayUrl);
+				this._complete = true;
+				return;
 			}
 		}
 	},
@@ -604,6 +613,7 @@ var instantListen = {
 			var item = this._allItems[i];
 			if(this.isGoodMatch(item)) {
 				item.activationCallback(item.autoPlayUrl);
+				return;
 			}
 		}
 	},
