@@ -3,6 +3,8 @@ $(document).ready(function() {
 	
 	var spotify = new iAPI('spotify', 'Spotify', 'http://www.spotify.com');
 
+		spotify.embedHeight = '113px';
+
 		spotify.canInstantPlay = function() { return true; };
 
 		spotify.numResults = function(){
@@ -39,6 +41,7 @@ $(document).ready(function() {
 			window.location = url;
 			var embedUrl = 'https://embed.spotify.com/?uri=' + url;
 			$('.playContainer').show();
+			$('.playContainer').css('height', this.embedHeight);
 			$('.playContainerSpacer').show();
 			$('.playFrame').attr('src', embedUrl);
 			Player.unloadCurrentTrack = function() {
@@ -229,6 +232,8 @@ $(document).ready(function() {
 
 	var youtube = new iAPI('youtube', 'YouTube', 'http://www.youtube.com');
 
+		youtube.embedHeight = '196px';
+
 		youtube.maxResults = 20;
 
 		youtube.note = "YouTube will return a maximum of " + youtube.maxResults + " results.";
@@ -264,6 +269,7 @@ $(document).ready(function() {
 
 		youtube.activateUrl = function(url) {
 			$('.playContainer').show();
+			$('.playContainer').css('height', this.embedHeight);
 			$('.playContainerSpacer').show();
 			$('.playFrame').attr('src', url);
 			$('.playFrame').css('height', '300px');
@@ -459,6 +465,7 @@ function iAPI(name, nicename, url){
 	this.busy = false;
 	this.template = _.template($('#tpl-service').html());
 	this.itemTemplate = _.template($('#tpl-track').html());
+	this.embedHeight = '196px';
 		
 	// Methods
 	this.addToDOM = function() {
@@ -544,9 +551,10 @@ function iAPI(name, nicename, url){
 	this.activateUrl = function(url) {
 		$('.playContainer').show();
 		$('.playContainerSpacer').show();
+		$('.playContainer').css('height', this.embedHeight);
 		$('.playFrame').attr('src', url);
 		setTimeout(Player.unloadCurrentTrack, 1500);
-	};
+	}.bind(this);
 
 	// this.deactivate = function() {
 	// 	this.unloadTrack();

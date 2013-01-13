@@ -337,7 +337,7 @@ a:hover {
 }
 
 .playContainer.minimized {
-	height: 31px;
+	height: 31px !important;
 }
 
 .playContainer.minimized .playFrame {
