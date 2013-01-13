@@ -43,11 +43,15 @@ Date: February 12, 2011
       </a></h1>
       <div class="tagline">Find Any Song.</div>
       <input id="q"/>
-      <!--
+      <? if(rand(0, 10) < 3) { ?>
+      <div class="warning">
+        Caution: Strange experiments are currently taking place at Music Smasher... :)
+      </div>
+      <? } else { ?>
       <div class="tip">
         Hot Tip! Use Shift+Enter to search if you're feeling lucky.
       </div>
-      -->
+      <? } ?>
       <div class="logos">
         <img src="images/logos_white_retina.png">
       </div>
@@ -66,8 +70,8 @@ Date: February 12, 2011
     <div class="footer">
       by <a href="http://www.mattmontag.com">Matt Montag</a>
     </div>
+    <div class="playContainerSpacer"></div>
   </div>
-  <div class="playContainerSpacer"></div>
   <div class="playContainer">
     <span class="info"></span>
     <span class="minimizeButton"><img src="images/minimize.png" width="11" height="11"></span>

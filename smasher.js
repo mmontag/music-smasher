@@ -350,7 +350,8 @@ $(document).ready(function() {
 		setTimeout(function(){ waiting = false; console.log("ready"); }, 2500);
 
 		// Switch to full view
-		$('body').removeClass("centered");
+		$('body').removeClass('centered');
+		$('body').addClass('resulting')
 
 		// Don't duplicate search
 		if(q == lastsearch) {
@@ -421,9 +422,11 @@ $(document).ready(function() {
 			instantListen.enabled = (instant === 'now');
 
 			if(!query) {
-				$('body').addClass("centered");
+				$('body').addClass('centered');
+				$('body').removeClass('resulting');
 			} else {
-				$('body').removeClass("centered");
+				$('body').removeClass('centered');
+				$('bddy').addClass('resulting');
 				query = query.replace(/[ -]+/g," "); // URL to query (see above)
 				console.log("[Router] search:",query);
 				$('#q').val(query);
