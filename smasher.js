@@ -3,6 +3,8 @@ $(document).ready(function() {
 	
 	var spotify = new iAPI('spotify', 'Spotify', 'http://www.spotify.com');
 
+		spotify.canInstantPlay = function() { return true; };
+
 		spotify.numResults = function(){
 			return this.items.length;
 		};
@@ -25,9 +27,31 @@ $(document).ready(function() {
 					this.data.tracks[key].name,
 					this.data.tracks[key].album.name,
 					this.data.tracks[key].href,
-					null,
+					this.data.tracks[key].href,
 					this.activateUrl
 				));
+			}
+		};
+
+		spotify.activateUrl = function(url) {
+			this.ensureSpotifyUri(url);
+			// This shouldn't trigger a navigation, as the spotify: protocol handler goes outside the browser
+			window.location = url;
+			var embedUrl = 'https://embed.spotify.com/?uri=' + url;
+			$('.playContainer').show();
+			$('.playContainerSpacer').show();
+			$('.playFrame').attr('src', embedUrl);
+			Player.unloadCurrentTrack = function() {
+				// Induce a track stop in the Spotify client by using a uri hash trick.
+				// "spotify:track:abcdefg#1:45" seeks to 1:45.
+				// Seek to 999:59 to end the song.
+				window.location = url + "%23999:59";
+			};
+		};
+
+		spotify.ensureSpotifyUri = function(url) {
+			if(!url.match(/^spotify:/)) {
+				throw new Error("Invalid Spotify track URI: " + url);
 			}
 		};
 	
@@ -238,6 +262,16 @@ $(document).ready(function() {
 			}
 		};
 
+		youtube.activateUrl = function(url) {
+			$('.playContainer').show();
+			$('.playContainerSpacer').show();
+			$('.playFrame').attr('src', url);
+			$('.playFrame').css('height', '300px');
+			// Youtube has a minimum embed height requirement. Workaround.
+			setTimeout(function() { $('.playFrame').css('height', '165px'); }, 3000);
+			setTimeout(Player.unloadCurrentTrack, 1500);
+		};
+
 		// Bunch of YouTube convenience functions borrowed from Tubalr. Thanks Cody - github.com/cjstewart88
 		youtube.is_blocked = function (video) {
 			var blocked = false;
@@ -395,7 +429,7 @@ function Track(artist, track, album, url, autoPlayUrl, activationCallback) {
 	this.url = url || '';
 	this.autoPlayUrl = autoPlayUrl || '';
 	// Each service can have a unique activation setup process
-	this.activationCallback = activationCallback || iAPI.activateUrl;
+	this.activationCallback = activationCallback;
 }
 
 function iAPI(name, nicename, url){
@@ -497,14 +531,17 @@ function iAPI(name, nicename, url){
 		$('.playContainer').show();
 		$('.playContainerSpacer').show();
 		$('.playFrame').attr('src', url);
+		setTimeout(Player.unloadCurrentTrack, 1500);
 	};
 
-	this.deactivate = function() {
-		$('.playContainer').hide();
-		$('.playContainerSpacer').hide();
-		$('.playFrame').attr('src', '');
-	};
+	// this.deactivate = function() {
+	// 	this.unloadTrack();
+	// 	$('.playContainer').hide();
+	// 	$('.playContainerSpacer').hide();
+	// 	$('.playFrame').attr('src', '');
+	// };
 
+	this.unloadTrack = function(){};
 	this.canInstantPlay = function(){};
 	this.endpoint = function(){};
 	this.parse = function(){};
@@ -594,6 +631,9 @@ _.templateSettings = {
 // Evil global stuff
 var waiting = false;
 var lastsearch = '';
+var Player = {
+	unloadCurrentTrack: function() {}
+};
 
 // Console shim
 window.console||(window.console={log:function(){}}); //console.log bypass for older browsers
