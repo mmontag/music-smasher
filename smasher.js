@@ -196,7 +196,7 @@ $(document).ready(function() {
 					this.data[key].SongName,
 					this.data[key].AlbumName,
 					this.data[key].Url,
-					null,
+					this.data[key].Url,
 					this.activateUrl
 				));
 			}
