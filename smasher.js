@@ -47,7 +47,7 @@ $(document).ready(function() {
 				// Seek to 999:59 to end the song.
 				window.location = url + "%23999:59";
 			};
-		};
+		}.bind(spotify);
 
 		spotify.ensureSpotifyUri = function(url) {
 			if(!url.match(/^spotify:/)) {
@@ -386,7 +386,13 @@ $(document).ready(function() {
 	mog.addToDOM();
 	bandcamp.addToDOM();
 	
-	$('#q').keydown(function(event) { if (event.keyCode == '13') { event.stopPropagation(); $('#qform').submit(); } });
+	$('#q').keydown(function(event) {
+		if (event.keyCode == '13') {
+			instantListen.enabled = event.shiftKey ? true : false;
+			event.stopPropagation();
+			$('#qform').submit();
+		}
+	});
 	$('.playContainer .closeButton').bind('click', function() {
 		Player.unloadCurrentTrack();
 		$('.playContainer').hide();
@@ -519,7 +525,7 @@ function iAPI(name, nicename, url){
 			// create <li> node from template
 			var li = $(this.itemTemplate(this.items[i]));
 			// add click handler
-			li.find('a').bind('click', this.activate.bind(this)); // TODO: don't use bind
+			li.find('a').bind('click', this.activate.bind(this));
 			// add to dom fragment
 			ul.append(li);
 		}
