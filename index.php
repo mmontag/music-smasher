@@ -58,9 +58,9 @@ Date: February 12, 2011
       <div class="details">
         <a href="http://www.mattmontag.com/music/music-smasher-streaming-music-api-mashup">Feedback</a> - 
         
-        <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.musicsmasher.net%2F&amp;send=false&amp;layout=button_count&amp;width=85&amp;show_faces=false&amp;action=like&amp;colorscheme=dark&amp;font=lucida+grande&amp;height=21&amp;appId=132115193511995" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:85px; height:21px; vertical-align: bottom;" allowTransparency="true"></iframe>
+        <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.musicsmasher.net%2F&amp;send=false&amp;layout=button_count&amp;width=85&amp;show_faces=false&amp;action=like&amp;colorscheme=dark&amp;font=lucida+grande&amp;height=21&amp;appId=132115193511995" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px; vertical-align: bottom;" allowTransparency="true"></iframe>
 
-        - <input type="checkbox" id="us" name="us" checked /> US Catalog Only
+        <input type="checkbox" id="us" name="us" checked /> US Catalog Only
       </div>
     </form>
   </td></tr></table>

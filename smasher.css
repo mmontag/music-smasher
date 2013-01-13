@@ -65,7 +65,7 @@ body.centered .search .logos {
 	white-space: nowrap;
 	line-height: 22px;
 	margin: 2px;
-	opacity: 0.25;
+	opacity: 0.5;
 	-webkit-transition: opacity linear 0.1s;
 	transition: opacity linear 0.1s;
 }
