@@ -45,7 +45,9 @@ $(document).ready(function() {
 			$('.playContainer').show();
 			$('.playContainer').css('height', this.embedHeight);
 			$('.playContainerSpacer').show();
+			$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame'));
 			$('.playFrame').attr('src', embedUrl);
+
 			Player.unloadCurrentTrack = function() {
 				// Induce a track stop in the Spotify client by using a uri hash trick.
 				// "spotify:track:abcdefg#1:45" seeks to 1:45.
@@ -274,7 +276,7 @@ $(document).ready(function() {
 			$('.playContainer').show();
 			$('.playContainer').css('height', this.embedHeight);
 			$('.playContainerSpacer').show();
-			$('.playFrame').attr('src', url);
+			$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame').attr('src', url));
 			$('.playFrame').css('height', '300px');
 			// Youtube has a minimum embed height requirement. Workaround.
 			setTimeout(function() { $('.playFrame').css('height', '165px'); }, 3000);
@@ -406,7 +408,7 @@ $(document).ready(function() {
 	$('.playContainer .closeButton').bind('click', function() {
 		Player.unloadCurrentTrack();
 		$('.playContainer').hide();
-		$('.playFrame').attr('src', '');
+		$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame'));
 	});
 	$('.playContainer .minimizeButton').bind('click', function() {
 		$('.playContainer').toggleClass('minimized');
@@ -557,7 +559,7 @@ iAPI.prototype.activateUrl = function(url) {
 	$('.playContainer').show();
 	$('.playContainerSpacer').show();
 	$('.playContainer').css('height', embedHeight);
-	$('.playFrame').attr('src', url);
+	$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame').attr('src', url));
 	setTimeout(Player.unloadCurrentTrack, 1500);
 };
 
