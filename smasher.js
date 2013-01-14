@@ -48,6 +48,7 @@ $(document).ready(function() {
 				// Induce a track stop in the Spotify client by using a uri hash trick.
 				// "spotify:track:abcdefg#1:45" seeks to 1:45.
 				// Seek to 999:59 to end the song.
+				Player.unloadCurrentTrack = doNothing;
 				window.location = url + "%23999:59";
 			};
 		}.bind(spotify);
@@ -443,8 +444,6 @@ $(document).ready(function() {
 
 });
 
-function doNothing() {}
-
 function Track(artist, track, album, url, autoPlayUrl, activationCallback) {
 	this.artist = artist || '';
 	this.track = track || '';
@@ -566,7 +565,7 @@ iAPI.prototype.activateUrl = function(url) {
 // 	$('.playFrame').attr('src', '');
 // };
 
-iAPI.prototype.unloadTrack = function(){};
+//iAPI.prototype.unloadTrack = function(){};
 iAPI.prototype.canInstantPlay = function(){};
 iAPI.prototype.endpoint = function(){};
 iAPI.prototype.parse = function(){};
@@ -666,8 +665,9 @@ _.templateSettings = {
 // Evil global stuff
 var waiting = false;
 var lastsearch = '';
+var doNothing = function() {};
 var Player = {
-	unloadCurrentTrack: function() {}
+	unloadCurrentTrack: doNothing
 };
 
 // Console shim
