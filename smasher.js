@@ -469,110 +469,110 @@ function iAPI(name, nicename, url){
 	this.template = _.template($('#tpl-service').html());
 	this.itemTemplate = _.template($('#tpl-track').html());
 	this.embedHeight = '196px';
-		
-	// Methods
-	this.addToDOM = function() {
-		var html = this.template(this);
-		$('#services').append(html);
-	
-		$('#'+this.apiName+' .refresh').click($.proxy(function(event) {
-			console.log(this.apiName + ' refresh');
-			this.submit(this.query); // Reuse old query value
-		}, this));
-	};
-	
-	this.submit = function(query){
-
-		console.log(this.apiName + ' submit');
-				
-		this.query = query;
-		
-		instantListen.setQuery(query);
-
-		this.items = [];
-		$('#'+this.apiName+' .note').hide();
-		$('#'+this.apiName+' .loading').show();
-		$('#'+this.apiName+' .results').empty();
-		$('#'+this.apiName+' .num-results').empty();
-		if(this.busy === true) {
-			console.log('hanging up on ajax call for '+this.apiName);
-			this.ajax.abort();
-		}
-		this.ajax = $.getJSON(this.endpoint(), $.proxy(this.callback, this)); // Enforce scope of callback with proxy
-		this.busy = true;
-	};
-	
-	this.numResults = function(){
-		if (this.data === null || this.data === undefined) return 0;
-		return this.data.length;
-	};
-	
-	this.callback = function(data){
-		this.busy = false;
-		this.data = data;
-		$('#'+this.apiName+' .loading').hide();
-		console.log(this.apiName+' received callback');
-		//console.log(data);
-		this.parse();
-		if(this.numResults() === 0) {
-			$('<p>No results found.</p>').appendTo('#'+this.apiName+' .results');
-		} else {
-			this.updateDOM();
-			if (instantListen.enabled === true && this.canInstantPlay() === true) {
-				// Notify the instant play manager that there is some new stuff to evaluate;
-				// see if one of the tracks will be good enough to play immediately.
-				instantListen.notify(this.items);
-			}
-		}
-	};
-
-	// Renders list of items
-	this.updateDOM = function(){
-		$('#'+this.apiName+' .num-results').html(this.numResults() + ' Results');
-
-		var ul = $('<ul class="result-list"></ul>');
-		for(var i = 0, length = this.items.length; i < length; i++) {
-			// create <li> node from template
-			var li = $(this.itemTemplate(this.items[i]));
-			// add click handler
-			li.find('a').bind('click', this.activate.bind(this));
-			// add to dom fragment
-			ul.append(li);
-		}
-		$('#'+this.apiName+' .results').append(ul);
-	};
-
-	this.activate = function(event) {
-		if(event && this.canInstantPlay()) {
-			event.stopPropagation();
-			event.preventDefault();
-			var autoplayurl = $(event.target).data('autoplayurl');
-			this.activateUrl(autoplayurl);
-		}
-	};
-
-	this.activateUrl = function(url) {
-		$('.playContainer').show();
-		$('.playContainerSpacer').show();
-		$('.playContainer').css('height', this.embedHeight);
-		$('.playFrame').attr('src', url);
-		setTimeout(Player.unloadCurrentTrack, 1500);
-	}.bind(this);
-
-	// this.deactivate = function() {
-	// 	this.unloadTrack();
-	// 	$('.playContainer').hide();
-	// 	$('.playContainerSpacer').hide();
-	// 	$('.playFrame').attr('src', '');
-	// };
-
-	this.unloadTrack = function(){};
-	this.canInstantPlay = function(){};
-	this.endpoint = function(){};
-	this.parse = function(){};
-	this.playTrack = function(){};
 }
 
+iAPI.prototype.addToDOM = function() {
+	var html = this.template(this);
+	$('#services').append(html);
+
+	$('#'+this.apiName+' .refresh').click($.proxy(function(event) {
+		console.log(this.apiName + ' refresh');
+		this.submit(this.query); // Reuse old query value
+	}, this));
+};
+
+iAPI.prototype.submit = function(query){
+
+	console.log(this.apiName + ' submit');
+			
+	this.query = query;
+	
+	instantListen.setQuery(query);
+
+	this.items = [];
+	$('#'+this.apiName+' .note').hide();
+	$('#'+this.apiName+' .loading').show();
+	$('#'+this.apiName+' .results').empty();
+	$('#'+this.apiName+' .num-results').empty();
+	if(this.busy === true) {
+		console.log('hanging up on ajax call for '+this.apiName);
+		this.ajax.abort();
+	}
+	this.ajax = $.getJSON(this.endpoint(), $.proxy(this.callback, this)); // Enforce scope of callback with proxy
+	this.busy = true;
+};
+
+iAPI.prototype.numResults = function(){
+	if (this.data === null || this.data === undefined) return 0;
+	return this.data.length;
+};
+
+iAPI.prototype.callback = function(data){
+	this.busy = false;
+	this.data = data;
+	$('#'+this.apiName+' .loading').hide();
+	console.log(this.apiName+' received callback');
+	//console.log(data);
+	this.parse();
+	if(this.numResults() === 0) {
+		$('<p>No results found.</p>').appendTo('#'+this.apiName+' .results');
+	} else {
+		this.updateDOM();
+		if (instantListen.enabled === true && this.canInstantPlay() === true) {
+			// Notify the instant play manager that there is some new stuff to evaluate;
+			// see if one of the tracks will be good enough to play immediately.
+			instantListen.notify(this.items);
+		}
+	}
+};
+
+// Renders list of items
+iAPI.prototype.updateDOM = function(){
+	$('#'+this.apiName+' .num-results').html(this.numResults() + ' Results');
+
+	var ul = $('<ul class="result-list"></ul>');
+	for(var i = 0, length = this.items.length; i < length; i++) {
+		// create <li> node from template
+		var li = $(this.itemTemplate(this.items[i]));
+		// add click handler
+		li.find('a').bind('click', this.onTrackClicked.bind(this));
+		// add to dom fragment
+		ul.append(li);
+	}
+	$('#'+this.apiName+' .results').append(ul);
+};
+
+iAPI.prototype.onTrackClicked = function(event) {
+	if(event && this.canInstantPlay()) {
+		event.stopPropagation();
+		event.preventDefault();
+		var autoplayurl = $(event.target).data('autoplayurl');
+		this.activateUrl(autoplayurl);
+	}
+};
+
+iAPI.prototype.activateUrl = function(url) {
+	$('.playContainer').show();
+	$('.playContainerSpacer').show();
+	$('.playContainer').css('height', this.embedHeight);
+	$('.playFrame').attr('src', url);
+	setTimeout(Player.unloadCurrentTrack, 1500);
+}.bind(iAPI);
+
+// this.deactivate = function() {
+// 	this.unloadTrack();
+// 	$('.playContainer').hide();
+// 	$('.playContainerSpacer').hide();
+// 	$('.playFrame').attr('src', '');
+// };
+
+iAPI.prototype.unloadTrack = function(){};
+iAPI.prototype.canInstantPlay = function(){};
+iAPI.prototype.endpoint = function(){};
+iAPI.prototype.parse = function(){};
+iAPI.prototype.playTrack = function(){};
+
+// InstantListen manager singleton
 var instantListen = {
 	// For now, instant listening is a race.
 	// the callbacks notify the instantListen guy when they come in,
