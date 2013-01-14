@@ -40,7 +40,7 @@ $(document).ready(function() {
 		spotify.activateUrl = function(url) {
 			this.ensureSpotifyUri(url);
 			// This shouldn't trigger a navigation, as the spotify: protocol handler goes outside the browser
-			window.location = url;
+			$('.spotifyTarget')[0].src = url;
 			var embedUrl = 'https://embed.spotify.com/?uri=' + url;
 			$('.playContainer').show();
 			$('.playContainer').css('height', this.embedHeight);
@@ -53,7 +53,7 @@ $(document).ready(function() {
 				// "spotify:track:abcdefg#1:45" seeks to 1:45.
 				// Seek to 999:59 to end the song.
 				Player.unloadCurrentTrack = doNothing;
-				window.location = url + "%23999:59";
+				$('.spotifyTarget')[0].src = url + "%23999:59";
 			};
 		}.bind(spotify);
 

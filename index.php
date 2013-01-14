@@ -77,7 +77,9 @@ Date: February 12, 2011
     <span class="minimizeButton"><img src="images/minimize.png" width="11" height="11"></span>
     <span class="closeButton"><img src="images/close.png" width="11" height="11"></span>
     <iframe class="playFrame" name="playFrame"></iframe>
+    <!-- Spotify protocol uri target iframe, workaround to prevent Grooveshark onbeforeunload -->
   </div>
+  <iframe class="spotifyTarget" name="spotifyTarget"></iframe>
 </div>
 <!-- Templates -->
 <script type="text/template" id="tpl-track">
