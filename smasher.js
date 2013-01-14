@@ -18,7 +18,9 @@ $(document).ready(function() {
 		spotify.parse = function() {
 			for(var key in this.data.tracks){
 				var territories = this.data.tracks[key].album.availability.territories.split(' ');
-				if($.inArray("US", territories) == -1 && $('#us').is(':checked')) continue;
+				if($('#us').is(':checked')) {
+					if ($.inArray("US", territories) == -1 && $.inArray("worldwide", territories) == -1) continue;
+				}
 				var artistString = '';
 				for(var key2 in this.data.tracks[key].artists) {
 					if(artistString.length > 0) artistString = artistString + ', ';
