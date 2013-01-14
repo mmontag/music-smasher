@@ -551,12 +551,13 @@ iAPI.prototype.onTrackClicked = function(event) {
 };
 
 iAPI.prototype.activateUrl = function(url) {
+	var embedHeight = this.embedHeight || '196px';
 	$('.playContainer').show();
 	$('.playContainerSpacer').show();
-	$('.playContainer').css('height', this.embedHeight);
+	$('.playContainer').css('height', embedHeight);
 	$('.playFrame').attr('src', url);
 	setTimeout(Player.unloadCurrentTrack, 1500);
-}.bind(iAPI);
+};
 
 // this.deactivate = function() {
 // 	this.unloadTrack();
