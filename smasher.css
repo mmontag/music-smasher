@@ -1,5 +1,6 @@
 html { -webkit-font-smoothing: antialiased; }
 body { background-color: #322f2c; }
+html, body, .container { height: 100%; }
 
 body, td {
 	font-family: 'Lucida Grande', Tahoma, sans-serif;
