@@ -1,4 +1,4 @@
-<!--doctype html-->
+<!-- DOCTYPE html -->
 <!--
 
 Music Smasher
@@ -8,10 +8,17 @@ Date: February 12, 2011
 -->
 <? $app_path = ""; ?>
 <html>
-<head>
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website#">
   <title>Music Smasher</title>
   <base href="http://<?= $_SERVER['HTTP_HOST'] ?>"/>
   <meta property="fb:admins" content="16903206"/>
+  <meta property="og:title" content="Music Smasher"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="http://musicsmasher.net"/>
+  <meta property="og:image" content="http://www.musicsmasher.net/images/screenshot.png"/>
+  <meta property="og:description"
+        content="Find any song. Music Smasher searches Spotify, Rdio, 
+                 Grooveshark, SoundCloud, Bandcamp, MOG, and YouTube."/>
   <link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="<?= $app_path ?>/smasher.css">
   <script type="text/javascript">
