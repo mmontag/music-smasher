@@ -109,10 +109,21 @@ $(document).ready(function() {
 		
 		soundcloud.parse = function() {
 			for(var key in this.data) {
+				// SouncCloud has some messy data.
+				// Sometimes the track title includes the artist.
+				// Use a simple rule; if the title has a hyphen,
+				// assume it has the artist and don't display the username.
+				var title = this.data[key].title;
+				var username = this.data[key].user.username;
+				var artist = title.match(/ [\-–]+ /) ? null : username;
+
+				// Strip newlines, try to fill the album field with something
+				var albumish = this.data[key].description.replace('\n', '/') || this.data[key].label_name || '(No description)';
+
 				this.items.push(new Track(
-					null,
-					this.data[key].title,
-					this.data[key].user.username,
+					artist,
+					title,
+					albumish,
 					this.data[key].permalink_url,
 					this.autoPlayUrl(this.data[key].id),
 					this.activateUrl
