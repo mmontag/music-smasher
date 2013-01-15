@@ -471,6 +471,7 @@ function iAPI(name, nicename, url){
 	this.busy = false;
 	this.template = _.template($('#tpl-service').html());
 	this.itemTemplate = _.template($('#tpl-track').html());
+	this.playheaderTemplate = _.template($('#tpl-playheader').html());
 	this.embedHeight = '196px';
 }
 
@@ -535,23 +536,26 @@ iAPI.prototype.updateDOM = function(){
 
 	var ul = $('<ul class="result-list"></ul>');
 	for(var i = 0, length = this.items.length; i < length; i++) {
+		var track = this.items[i];
 		// create <li> node from template
-		var li = $(this.itemTemplate(this.items[i]));
+		var li = $(this.itemTemplate(track));
 		// add click handler
-		li.find('a').bind('click', this.onTrackClicked.bind(this));
+		var self = this;
+		li.find('a').bind('click', function(track) {
+			return function(event) {
+				if(event && self.canInstantPlay()) {
+					event.stopPropagation();
+					event.preventDefault();
+					$('.playHeader .info').html(self.playheaderTemplate(track));
+					var autoplayurl = $(event.target).data('autoplayurl');
+					self.activateUrl(autoplayurl);
+				}
+			};
+		}(track));
 		// add to dom fragment
 		ul.append(li);
 	}
 	$('#'+this.apiName+' .results').append(ul);
-};
-
-iAPI.prototype.onTrackClicked = function(event) {
-	if(event && this.canInstantPlay()) {
-		event.stopPropagation();
-		event.preventDefault();
-		var autoplayurl = $(event.target).data('autoplayurl');
-		this.activateUrl(autoplayurl);
-	}
 };
 
 iAPI.prototype.activateUrl = function(url) {

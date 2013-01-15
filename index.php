@@ -80,9 +80,11 @@ Date: February 12, 2011
     <div class="playContainerSpacer"></div>
   </div>
   <div class="playContainer">
-    <span class="info"></span>
-    <span class="minimizeButton"><img src="images/minimize.png" width="11" height="11"></span>
-    <span class="closeButton"><img src="images/close.png" width="11" height="11"></span>
+    <div class="playHeader">
+      <span class="info"></span>
+      <span class="minimizeButton"><img src="images/minimize.png" width="30" height="30"></span>
+      <span class="closeButton"><img src="images/close.png" width="30" height="30"></span>
+    </div>
     <iframe class="playFrame" name="playFrame"></iframe>
     <!-- Spotify protocol uri target iframe, workaround to prevent Grooveshark onbeforeunload -->
     <iframe class="spotifyTarget" name="spotifyTarget"></iframe>
@@ -107,6 +109,9 @@ Date: February 12, 2011
     <div class="note">{{ note }}</div>
     <div class="results"></div>
   </div>
+</script>
+<script type="text/template" id="tpl-playheader">
+  {% if (artist) { %}{{ artist }} - {% } %}{{ track }}
 </script>
 </body>
 </html>

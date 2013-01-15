@@ -321,20 +321,45 @@ a:hover {
 	background: url(images/black_paper.gif);
 	box-shadow: 0px -1px 13px 0 rgba(0, 0, 0, 0.1);
 	border-top: 1px solid rgba(0,0,0,0.1);
+	-webkit-transition: height 0.2s ease-in;
+	-moz-transition: height 0.2s ease-in;
 }
 
 .playContainer .minimizeButton {
 	position: absolute;
-	top: 10px;
-	right: 33px;
+	top: 0px;
+	right: 24px;
 	cursor: pointer;
 }
 
 .playContainer .closeButton {
 	position: absolute;
-	top: 10px;
-	right: 11px;
+	top: 0px;
+	right: 1px;
 	cursor: pointer;
+}
+
+.playContainer .header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 31px;
+}
+
+.playContainer .info {
+	display: block;
+	color: #eee;
+	font-size: 12px;
+	padding: 0 70px 0 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 31px;
+	height: 31px;
+	box-sizing: border-box;
+	opacity: 0.25;
+	-webkit-transition: opacity 0.5s linear;
+	-moz-transition: opacity 0.5s linear;
 }
 
 .playContainer.minimized {
@@ -343,6 +368,10 @@ a:hover {
 
 .playContainer.minimized .playFrame {
 	visibility: hidden;
+}
+
+.playContainer.minimized .info {
+	opacity: 1.0;
 }
 
 .playFrame {
