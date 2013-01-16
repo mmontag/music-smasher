@@ -120,7 +120,12 @@ $(document).ready(function() {
 				var artist = title.match(/ [\-–]+ /) ? null : username;
 
 				// Strip newlines, try to fill the album field with something
-				var albumish = tracks[i].description.replace('\n', '/') || tracks[i].label_name || '(No description)';
+				var albumish;
+				if (tracks[i].description) {
+					albumish = tracks[i].description.replace('\n', '/');
+				} else {
+					albumish = tracks[i].label_name || '(No description)';
+				}
 
 				this.items.push(new Track(
 					artist,
