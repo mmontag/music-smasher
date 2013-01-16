@@ -16,22 +16,23 @@ $(document).ready(function() {
 		};
 		
 		spotify.parse = function() {
-			for(var key in this.data.tracks){
-				var territories = this.data.tracks[key].album.availability.territories.split(' ');
+			var tracks = this.data.tracks;
+			for(var i = 0; i < tracks.length; i++){
+				var territories = tracks[i].album.availability.territories.split(' ');
 				if($('#us').is(':checked')) {
 					if ($.inArray("US", territories) == -1 && $.inArray("worldwide", territories) == -1) continue;
 				}
 				var artistString = '';
-				for(var key2 in this.data.tracks[key].artists) {
+				for(var j = 0; j < tracks[i].artists.length; j++) {
 					if(artistString.length > 0) artistString = artistString + ', ';
-					artistString = artistString + this.data.tracks[key].artists[key2].name;
+					artistString = artistString + tracks[i].artists[j].name;
 				}
 				this.items.push(new Track(
 					artistString,
-					this.data.tracks[key].name,
-					this.data.tracks[key].album.name,
-					this.data.tracks[key].href,
-					this.data.tracks[key].href,
+					tracks[i].name,
+					tracks[i].album.name,
+					tracks[i].href,
+					tracks[i].href,
 					this.activateUrl
 				));
 			}
@@ -76,13 +77,13 @@ $(document).ready(function() {
 		mog.parse = function() {
 			mogdata = this.data;
 			console.log("MOG", this.data);
-			for(var key in this.data.tracks) {
-
+			var tracks = this.data.tracks;
+			for(var i = 0; i < tracks.length; i++) {
 				this.items.push(new Track(
-					this.data.tracks[key].artist_name,
-					this.data.tracks[key].album_name,
-					this.data.tracks[key].track_name,
-					"http://mog.com/tracks/mn" + this.data.tracks[key].track_id,
+					tracks[i].artist_name,
+					tracks[i].album_name,
+					tracks[i].track_name,
+					"http://mog.com/tracks/mn" + tracks[i].track_id,
 					null,
 					this.activateUrl
 				));
@@ -108,24 +109,25 @@ $(document).ready(function() {
 		};
 		
 		soundcloud.parse = function() {
-			for(var key in this.data) {
+				var tracks = this.data;
+				for(var i = 0; i < tracks.length; i++) {
 				// SouncCloud has some messy data.
 				// Sometimes the track title includes the artist.
 				// Use a simple rule; if the title has a hyphen,
 				// assume it has the artist and don't display the username.
-				var title = this.data[key].title;
-				var username = this.data[key].user.username;
+				var title = tracks[i].title;
+				var username = tracks[i].user.username;
 				var artist = title.match(/ [\-–]+ /) ? null : username;
 
 				// Strip newlines, try to fill the album field with something
-				var albumish = this.data[key].description.replace('\n', '/') || this.data[key].label_name || '(No description)';
+				var albumish = tracks[i].description.replace('\n', '/') || tracks[i].label_name || '(No description)';
 
 				this.items.push(new Track(
 					artist,
 					title,
 					albumish,
-					this.data[key].permalink_url,
-					this.autoPlayUrl(this.data[key].id),
+					tracks[i].permalink_url,
+					this.autoPlayUrl(tracks[i].id),
 					this.activateUrl
 				));
 			}
@@ -146,14 +148,14 @@ $(document).ready(function() {
 		
 		bandcamp.parse = function() {
 			
-			// The Bandcamp API could be much better.
+			// The Bandcamp API could be better.
 
 			var apikey = "drepradstrendirheinbryni";
 			var ep = "http://api.bandcamp.com/api";
 			var bands = this.data.results;
 			var band_ids = [];
-			for(var key in bands) {
-				band_ids.push(bands[key].band_id);
+			for(var i = 0; i < bands.length; i++) {
+				band_ids.push(bands[i].band_id);
 			}
 			band_ids.push(1);
 			var band_string = band_ids.join(',');
@@ -162,34 +164,35 @@ $(document).ready(function() {
 			var self = this;
 			
 			var ajax = $.getJSON(url, function(data) {
-				var album_ids = [];
-				for(var artist_id in data) {
-					var albums = data[artist_id].discography;
-					for(var key in albums) {
-						var album_id = albums[key].album_id;
-						var artist = albums[key].artist;
+				for(var artist_id in data) { // data is an object, not an array
+          if (data.hasOwnProperty(artist_id)) {
+            var albums = data[artist_id].discography;
+            for(var key = 0; key < albums.length; key++) {
+              var album_id = albums[key].album_id;
+              var artist = albums[key].artist;
 
-						var artistUrl = albums[key].url.substr(0,albums[key].url.indexOf("/album/"));
-						
-						var url = ep + "/album/2/info?callback=?&album_id=" + album_id + "&key=" + apikey;
-						
-						var ajax = $.getJSON(url, function(data) {
-							var album = data.title;
-							for(var key in data.tracks) {
-								var track = data.tracks[key].title;
-								var url = artistUrl + data.tracks[key].url;
-								self.items.push(new Track(
-									artist,
-									track,
-									album,
-									url,
-									null,
-									this.activateUrl
-								));
-							}
-							self.updateDOM();
-						});
-					}
+              var artistUrl = albums[key].url.substr(0,albums[key].url.indexOf("/album/"));
+
+              var url = ep + "/album/2/info?callback=?&album_id=" + album_id + "&key=" + apikey;
+
+              var ajax = $.getJSON(url, function(data) {
+                var album = data.title;
+                for(var key = 0; key < data.tracks.length; key++) {
+                  var track = data.tracks[key].title;
+                  var url = artistUrl + data.tracks[key].url;
+                  self.items.push(new Track(
+                    artist,
+                    track,
+                    album,
+                    url,
+                    null,
+                    this.activateUrl
+                  ));
+                }
+                self.updateDOM();
+              });
+            }
+          }
 				}
 			});
 		};
@@ -206,7 +209,7 @@ $(document).ready(function() {
 		};
 		
 		grooveshark.parse = function() {
-			for(var key in this.data) {
+			for(var key = 0; key < this.data.length; key++) {
 				this.items.push(new Track(
 					this.data[key].ArtistName,
 					this.data[key].SongName,
@@ -231,15 +234,16 @@ $(document).ready(function() {
 		};
 		
 		rdio.parse = function() {
-			for(var key in this.data.result.results) {
+			var tracks = this.data.result.results;
+			for(var key = 0; key < tracks.length; key++) {
 				//Rdio search includes results that are unavailable for streaming. I don't show them.
-				if(this.data.result.results[key].canDownload || this.data.result.results[key].canSample) {
+				if(tracks[key].canDownload || tracks[key].canSample) {
 					this.items.push(new Track(
-						this.data.result.results[key].artist,
-						this.data.result.results[key].name,
-						this.data.result.results[key].album,
-						this.data.result.results[key].shortUrl,
-						this.data.result.results[key].embedUrl + '?autoplay',
+						tracks[key].artist,
+						tracks[key].name,
+						tracks[key].album,
+						tracks[key].shortUrl,
+						tracks[key].embedUrl + '?autoplay',
 						this.activateUrl
 					));
 				}
@@ -265,10 +269,11 @@ $(document).ready(function() {
 		};
 		
 		youtube.parse = function() {
-			if (!this.data.feed.entry) return;
-			for(var key in this.data.feed.entry) {
+			var tracks = this.data.feed.entry;
+			if (!tracks) return;
+			for(var i = 0; i < tracks.length; i++) {
 				//Filter out bad YouTube video results.
-				var video = this.data.feed.entry[key];
+				var video = tracks[i];
 				if (!this.is_blocked(video) && !this.is_live(video) && this.is_music(video) && !this.is_cover_or_remix(video)) {
 					var videoId = video.id.$t.split(":")[3];
 					this.items.push(new Track(
@@ -566,7 +571,7 @@ iAPI.prototype.updateDOM = function(){
 		// add to dom fragment
 		ul.append(li);
 	}
-	$('#'+this.apiName+' .results').append(ul);
+	$('#'+this.apiName+' .results').html(ul);
 };
 
 iAPI.prototype.activateUrl = function(url) {
