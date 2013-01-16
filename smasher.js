@@ -81,8 +81,8 @@ $(document).ready(function() {
 			for(var i = 0; i < tracks.length; i++) {
 				this.items.push(new Track(
 					tracks[i].artist_name,
-					tracks[i].album_name,
 					tracks[i].track_name,
+					tracks[i].album_name,
 					"http://mog.com/tracks/mn" + tracks[i].track_id,
 					null,
 					this.activateUrl
