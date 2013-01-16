@@ -382,6 +382,22 @@ a:hover {
 	height: 165px;
 }
 
+.grooveshark .playFrame {
+	/* shrink Grooveshark a little bit */
+	width: 125%;
+	height: 206px; /* 165 * 1.25 */
+    -moz-transform: scale(0.80, 0.80); 
+    -webkit-transform: scale(0.80, 0.80); 
+    -o-transform: scale(0.80, 0.80);
+    -ms-transform: scale(0.80, 0.80);
+    transform: scale(0.80, 0.80); 
+    -moz-transform-origin: top left;
+    -webkit-transform-origin: top left;
+    -o-transform-origin: top left;
+    -ms-transform-origin: top left;
+    transform-origin: top left;
+}
+
 .tip, .warning {
 	font-size: 12px;
 	margin: 10px 0;

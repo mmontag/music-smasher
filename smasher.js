@@ -563,6 +563,7 @@ iAPI.prototype.updateDOM = function(){
 					event.stopPropagation();
 					event.preventDefault();
 					$('.playHeader .info').html(self.playheaderTemplate(track));
+					$('.playContainer').attr('class', 'playContainer ' + self.apiName);
 					var autoplayurl = $(event.target).data('autoplayurl');
 					self.activateUrl(autoplayurl);
 				}
