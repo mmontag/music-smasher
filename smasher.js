@@ -170,7 +170,7 @@ $(document).ready(function() {
 			
 			var ajax = $.getJSON(url, function(data) {
 				for(var artist_id in data) { // data is an object, not an array
-          if (data.hasOwnProperty(artist_id)) {
+          if (data.hasOwnProperty(artist_id) && data[artist_id].discography) {
             var albums = data[artist_id].discography;
             for(var key = 0; key < albums.length; key++) {
               var album_id = albums[key].album_id;
@@ -642,6 +642,9 @@ var instantListen = {
 	},
 
 	notifyDone: function() {
+		if (this._complete) {
+			return;
+		}
 		for(var i = 0; i < this._allItems.length; i++) {
 			var item = this._allItems[i];
 			if(this.isGoodMatch(item)) {
