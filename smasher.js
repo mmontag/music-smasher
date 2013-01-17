@@ -3,8 +3,6 @@ $(document).ready(function() {
 	
 	var spotify = new iAPI('spotify', 'Spotify', 'http://www.spotify.com');
 
-		spotify.embedHeight = '113px';
-
 		spotify.canInstantPlay = function() { return true; };
 
 		spotify.numResults = function(){
@@ -32,31 +30,11 @@ $(document).ready(function() {
 					tracks[i].name,
 					tracks[i].album.name,
 					tracks[i].href,
-					tracks[i].href,
-					this.activateUrl
+					'https://embed.spotify.com/?uri=' + tracks[i].href,
+					this.apiName
 				));
 			}
 		};
-
-		spotify.activateUrl = function(url) {
-			this.ensureSpotifyUri(url);
-			// This shouldn't trigger a navigation, as the spotify: protocol handler goes outside the browser
-			$('.spotifyTarget')[0].src = url;
-			var embedUrl = 'https://embed.spotify.com/?uri=' + url;
-			$('.playContainer').show();
-			$('.playContainer').css('height', this.embedHeight);
-			$('.playContainerSpacer').show();
-			$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame'));
-			$('.playFrame').attr('src', embedUrl);
-
-			Player.unloadCurrentTrack = function() {
-				// Induce a track stop in the Spotify client by using a uri hash trick.
-				// "spotify:track:abcdefg#1:45" seeks to 1:45.
-				// Seek to 999:59 to end the song.
-				Player.unloadCurrentTrack = doNothing;
-				$('.spotifyTarget')[0].src = url + "%23999:59";
-			};
-		}.bind(spotify);
 
 		spotify.ensureSpotifyUri = function(url) {
 			if(!url.match(/^spotify:/)) {
@@ -85,7 +63,7 @@ $(document).ready(function() {
 					tracks[i].album_name,
 					"http://mog.com/tracks/mn" + tracks[i].track_id,
 					null,
-					this.activateUrl
+					this.apiName
 				));
 			}
 		};
@@ -109,8 +87,8 @@ $(document).ready(function() {
 		};
 		
 		soundcloud.parse = function() {
-				var tracks = this.data;
-				for(var i = 0; i < tracks.length; i++) {
+			var tracks = this.data;
+			for(var i = 0; i < tracks.length; i++) {
 				// SouncCloud has some messy data.
 				// Sometimes the track title includes the artist.
 				// Use a simple rule; if the title has a hyphen,
@@ -133,7 +111,7 @@ $(document).ready(function() {
 					albumish,
 					tracks[i].permalink_url,
 					this.autoPlayUrl(tracks[i].id),
-					this.activateUrl
+					this.apiName
 				));
 			}
 		};
@@ -174,10 +152,14 @@ $(document).ready(function() {
             var albums = data[artist_id].discography;
             for(var key = 0; key < albums.length; key++) {
               var album_id = albums[key].album_id;
+
+							// TODO: support track singles returned with album set, ex. Knife Party
+							if (!album_id) {
+								continue;
+							}
+
               var artist = albums[key].artist;
-
               var artistUrl = albums[key].url.substr(0,albums[key].url.indexOf("/album/"));
-
               var url = ep + "/album/2/info?callback=?&album_id=" + album_id + "&key=" + apikey;
 
               var ajax = $.getJSON(url, function(data) {
@@ -191,7 +173,7 @@ $(document).ready(function() {
                     album,
                     url,
                     null,
-                    this.activateUrl
+										this.apiName
                   ));
                 }
                 self.updateDOM();
@@ -210,18 +192,19 @@ $(document).ready(function() {
 		grooveshark.canInstantPlay = function() { return true; };
 
 		grooveshark.endpoint = function() {
-			return('proxy.php?mode=native&url='+escape('http://tinysong.com/s/' + escape(this.query) + '?format=json&limit=32'));
+			return('proxy.php?mode=native&url=' + encodeURIComponent('http://tinysong.com/s/' + encodeURIComponent(this.query) + '?format=json&limit=32'));
 		};
 		
 		grooveshark.parse = function() {
-			for(var key = 0; key < this.data.length; key++) {
+			var tracks = this.data;
+			for(var i = 0; i < tracks.length; i++) {
 				this.items.push(new Track(
-					this.data[key].ArtistName,
-					this.data[key].SongName,
-					this.data[key].AlbumName,
-					this.data[key].Url,
-					this.data[key].Url,
-					this.activateUrl
+					tracks[i].ArtistName,
+					tracks[i].SongName,
+					tracks[i].AlbumName,
+					tracks[i].Url,
+					tracks[i].Url,
+					this.apiName
 				));
 			}
 		};
@@ -240,16 +223,16 @@ $(document).ready(function() {
 		
 		rdio.parse = function() {
 			var tracks = this.data.result.results;
-			for(var key = 0; key < tracks.length; key++) {
+			for(var i = 0; i < tracks.length; i++) {
 				//Rdio search includes results that are unavailable for streaming. I don't show them.
-				if(tracks[key].canDownload || tracks[key].canSample) {
+				if(tracks[i].canDownload || tracks[i].canSample) {
 					this.items.push(new Track(
-						tracks[key].artist,
-						tracks[key].name,
-						tracks[key].album,
-						tracks[key].shortUrl,
-						tracks[key].embedUrl + '?autoplay',
-						this.activateUrl
+						tracks[i].artist,
+						tracks[i].name,
+						tracks[i].album,
+						tracks[i].shortUrl,
+						tracks[i].embedUrl + '?autoplay',
+						this.apiName
 					));
 				}
 			}
@@ -287,21 +270,10 @@ $(document).ready(function() {
 						video.media$group.media$description.$t,
 						'http://www.youtube.com/watch?v=' + videoId,
 						'http://www.youtube.com/embed/' + videoId + '?autoplay=1',
-						this.activateUrl
+						this.apiName
 					));
 				}
 			}
-		};
-
-		youtube.activateUrl = function(url) {
-			$('.playContainer').show();
-			$('.playContainer').css('height', this.embedHeight);
-			$('.playContainerSpacer').show();
-			$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame').attr('src', url));
-			$('.playFrame').css('height', '300px');
-			// Youtube has a minimum embed height requirement. Workaround.
-			setTimeout(function() { $('.playFrame').css('height', '165px'); }, 3000);
-			setTimeout(Player.unloadCurrentTrack, 1500);
 		};
 
 		// Bunch of YouTube convenience functions borrowed from Tubalr. Thanks Cody - github.com/cjstewart88
@@ -426,15 +398,8 @@ $(document).ready(function() {
 			$('#qform').submit();
 		}
 	});
-	$('.playContainer .closeButton').bind('click', function() {
-		Player.unloadCurrentTrack();
-		$('.playContainer').hide();
-		$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame'));
-	});
-	$('.playContainer .minimizeButton').bind('click', function() {
-		$('.playContainer').toggleClass('minimized');
-	});
-	
+	Player.init();
+
 	// Define URL to Method routing
 	var AppRouter = Backbone.Router.extend({
 		
@@ -469,14 +434,13 @@ $(document).ready(function() {
 
 });
 
-function Track(artist, track, album, url, autoPlayUrl, activationCallback) {
+function Track(artist, track, album, url, autoPlayUrl, apiName) {
 	this.artist = artist || '';
 	this.track = track || '';
 	this.album = album || '';
 	this.url = url || '';
 	this.autoPlayUrl = autoPlayUrl || '';
-	// Each service can have a unique activation setup process
-	this.activationCallback = activationCallback;
+	this.apiName = apiName;
 }
 
 function iAPI(name, nicename, url){
@@ -492,7 +456,6 @@ function iAPI(name, nicename, url){
 	this.busy = false;
 	this.template = _.template($('#tpl-service').html());
 	this.itemTemplate = _.template($('#tpl-track').html());
-	this.playheaderTemplate = _.template($('#tpl-playheader').html());
 	this.embedHeight = '196px';
 }
 
@@ -567,10 +530,7 @@ iAPI.prototype.updateDOM = function(){
 				if(event && self.canInstantPlay()) {
 					event.stopPropagation();
 					event.preventDefault();
-					$('.playHeader .info').html(self.playheaderTemplate(track));
-					$('.playContainer').attr('class', 'playContainer ' + self.apiName);
-					var autoplayurl = $(event.target).data('autoplayurl');
-					self.activateUrl(autoplayurl);
+					Player.playTrack(track);
 				}
 			};
 		}(track));
@@ -580,27 +540,9 @@ iAPI.prototype.updateDOM = function(){
 	$('#'+this.apiName+' .results').html(ul);
 };
 
-iAPI.prototype.activateUrl = function(url) {
-	var embedHeight = this.embedHeight || '196px';
-	$('.playContainer').show();
-	$('.playContainerSpacer').show();
-	$('.playContainer').css('height', embedHeight);
-	$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame').attr('src', url));
-	setTimeout(Player.unloadCurrentTrack, 1500);
-};
-
-// this.deactivate = function() {
-// 	this.unloadTrack();
-// 	$('.playContainer').hide();
-// 	$('.playContainerSpacer').hide();
-// 	$('.playFrame').attr('src', '');
-// };
-
-//iAPI.prototype.unloadTrack = function(){};
 iAPI.prototype.canInstantPlay = function(){};
 iAPI.prototype.endpoint = function(){};
 iAPI.prototype.parse = function(){};
-iAPI.prototype.playTrack = function(){};
 
 // InstantListen manager singleton
 var instantListen = {
@@ -621,20 +563,20 @@ var instantListen = {
 		this._query = query;
 	},
 
-	notify: function(items) {
+	notify: function(tracks) {
 		// If already found a match, ignore subsequent callbacks until new query
 		if (this._complete) {
 			return;
 		}
 
-		// store reference to all items for fallback mode
-		this._allItems = this._allItems.concat(items);
+		// store reference to all tracks for fallback mode
+		this._allItems = this._allItems.concat(tracks);
 
 		// TODO: replace all iterators with underscore shortcuts
-		for(var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if(this.isGreatMatch(item)) {
-				item.activationCallback(item.autoPlayUrl);
+		for(var i = 0; i < tracks.length; i++) {
+			var track = tracks[i];
+			if(this.isGreatMatch(track)) {
+				Player.playTrack(track);
 				this._complete = true;
 				return;
 			}
@@ -646,9 +588,10 @@ var instantListen = {
 			return;
 		}
 		for(var i = 0; i < this._allItems.length; i++) {
-			var item = this._allItems[i];
-			if(this.isGoodMatch(item)) {
-				item.activationCallback(item.autoPlayUrl);
+			var track = this._allItems[i];
+			if(this.isGoodMatch(track)) {
+				Player.playTrack(track);
+				this._complete = true;
 				return;
 			}
 		}
@@ -701,34 +644,86 @@ var waiting = false;
 var lastsearch = '';
 var doNothing = function() {};
 var Player = {
-	unloadCurrentTrack: doNothing
+	init: function() {
+		$('.playContainer .closeButton').bind('click', function() {
+			Player.unloadCurrentTrack();
+			$('.playContainer').hide();
+			$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame'));
+		});
+		$('.playContainer .minimizeButton').bind('click', function() {
+			$('.playContainer').toggleClass('minimized');
+		});
+		this.playheaderTemplate = _.template($('#tpl-playheader').html());
+		this.$playContainer = $('.playContainer');
+		this.$playHeaderInfo = $('.playHeader .info');
+		this.$playContainerSpacer = $('.playContainerSpacer');
+	},
+
+	unloadCurrentTrack: doNothing,
+
+	playTrack: function(track) {
+		var embedHeight = '196px';
+
+		if (track.apiName == 'spotify') {
+			embedHeight = '113px';
+			// Load the spotify URI in an iframe so it doesn't trigger onbeforeunload in Grooveshark embed
+			$('.spotifyTarget')[0].src = track.url;
+			Player.unloadCurrentTrack = function() {
+				// Induce a track stop in the Spotify client by using a uri hash trick.
+				// "spotify:track:abcdefg#1:45" seeks to 1:45.
+				// Seek to 999:59 to end the song.
+				Player.unloadCurrentTrack = doNothing;
+				$('.spotifyTarget')[0].src = track.url + "%23999:59";
+			};
+		} else {
+			setTimeout(Player.unloadCurrentTrack, 1500);
+		}
+
+		this.$playContainer.show();
+		this.$playContainerSpacer.show();
+
+		this.$playContainer.css('height', embedHeight);
+		var playClass = (this.$playContainer.hasClass('minimized') && 'minimized ') + (track.apiName || '');
+		this.$playContainer.attr('class', 'playContainer ' + playClass);
+		this.$playHeaderInfo.html(this.playheaderTemplate(track));
+
+		$('.playFrame').replaceWith($('<iframe/>').addClass('playFrame'));
+		if (track.apiName == 'youtube') {
+			// Youtube has a minimum embed height requirement. Workaround.
+			$('.playFrame').css('height', '300px');
+			setTimeout(function() { $('.playFrame').css('height', '165px'); }, 3000);
+		}
+		$('.playFrame').attr('src', track.autoPlayUrl);
+	}
 };
 
 // Console shim
 window.console||(window.console={log:function(){}}); //console.log bypass for older browsers
 
 // Bind shim
-if (!Function.prototype.bind) {
-  Function.prototype.bind = function (oThis) {
-    if (typeof this !== "function") {
-      // closest thing possible to the ECMAScript 5 internal IsCallable function
-      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-    }
- 
-    var aArgs = Array.prototype.slice.call(arguments, 1),
-        fToBind = this,
-        fNOP = function () {},
-        fBound = function () {
-          return fToBind.apply(this instanceof fNOP && oThis ? this : oThis,
-                               aArgs.concat(Array.prototype.slice.call(arguments)));
-        };
- 
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
- 
-    return fBound;
-  };
-}
+(function bindShim() {
+	if (!Function.prototype.bind) {
+		Function.prototype.bind = function (oThis) {
+			if (typeof this !== "function") {
+				// closest thing possible to the ECMAScript 5 internal IsCallable function
+				throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+			}
+
+			var aArgs = Array.prototype.slice.call(arguments, 1),
+					fToBind = this,
+					fNOP = function () {},
+					fBound = function () {
+						return fToBind.apply(this instanceof fNOP && oThis ? this : oThis,
+																 aArgs.concat(Array.prototype.slice.call(arguments)));
+					};
+
+			fNOP.prototype = this.prototype;
+			fBound.prototype = new fNOP();
+
+			return fBound;
+		};
+	}
+})();
 
 // IE8/9 CORS cross-domain requests compatibility
 // https://github.com/jaubourg/ajaxHooks/blob/master/src/ajax/xdr.js
