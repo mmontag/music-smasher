@@ -6,13 +6,29 @@ Author: matt.montag@gmail.com
 Date: February 12, 2011
 
 -->
-<? $app_path = ""; ?>
+<?php
+  $app_path = "";
+
+  // Match instant play requests
+  $uri = trim($_SERVER['REQUEST_URI'], '/');
+  $match = array();
+  preg_match("/^(.*)\/now/", $uri, $match);
+  $match = substr($match[1], 0, 100);
+  $match = str_replace('-', ' ', $match);
+  $match = ucwords(strtolower($match));
+  $match = htmlspecialchars($match, ENT_COMPAT, 'UTF-8');
+  if ($match) {
+    $ogtitle = "play $match on Music Smasher";
+  } else {
+    $ogtitle = "Music Smasher";
+  }
+?>
 <html>
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website#">
   <title>Music Smasher</title>
   <base href="http://<?= $_SERVER['HTTP_HOST'] ?>"/>
   <meta property="fb:admins" content="16903206"/>
-  <meta property="og:title" content="Music Smasher"/>
+  <meta property="og:title" content="<?= $ogtitle ?>"/>
   <meta property="og:type" content="website"/>
   <meta property="og:url" content="http://musicsmasher.net"/>
   <meta property="og:image" content="http://www.musicsmasher.net/images/screenshot.png"/>
