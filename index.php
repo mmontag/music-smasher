@@ -17,10 +17,11 @@ Date: February 12, 2011
   $match = str_replace('-', ' ', $match);
   $match = ucwords(strtolower($match));
   $match = htmlspecialchars($match, ENT_COMPAT, 'UTF-8');
+  $ogtitle = "Music Smasher";
+  $canonical_url = "http://musicmasher.net";
   if ($match) {
     $ogtitle = "play $match on Music Smasher";
-  } else {
-    $ogtitle = "Music Smasher";
+    $canonical_url = "http://musicsmasher.net" . $_SERVER['REQUEST_URI'];
   }
 ?>
 <html>
@@ -30,7 +31,7 @@ Date: February 12, 2011
   <meta property="fb:admins" content="16903206"/>
   <meta property="og:title" content="<?= $ogtitle ?>"/>
   <meta property="og:type" content="website"/>
-  <meta property="og:url" content="http://musicsmasher.net"/>
+  <meta property="og:url" content="<?= $canonical_url ?>"/>
   <meta property="og:image" content="http://www.musicsmasher.net/images/screenshot.png"/>
   <meta property="og:description"
         content="Find any song. Music Smasher searches Spotify, Rdio, 
