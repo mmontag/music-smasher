@@ -369,7 +369,7 @@ $(document).ready(function() {
 			lastsearch = q;
 			waiting = true;
 			// TODO: preserve parameter /now
-			appRouter.navigate(q.replace(/[ -]+/g,"-")); // query to URL (see below)
+			appRouter.navigate(q.replace(/[ -]+/g,"-") + (instantListen.enabled ? '/now' : '')); // query to URL (see below)
 		} catch(e) {
 			console.log(e);
 		}
