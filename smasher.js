@@ -486,7 +486,25 @@ iAPI.prototype.submit = function(query){
 		console.log('hanging up on ajax call for '+this.apiName);
 		this.ajax.abort();
 	}
-	this.ajax = $.getJSON(this.endpoint(), $.proxy(this.callback, this)); // Enforce scope of callback with proxy
+	//this.ajax = $.getJSON(this.endpoint(), $.proxy(this.callback, this)); // Enforce scope of callback with proxy
+
+	this.ajax = $.ajax({
+		dataType: 'json',
+		url: this.endpoint(),
+		success: $.proxy(this.callback, this),
+		error:	$.proxy(function(jqxhr, jqstatus, jqerror) {
+			var status = '';
+			if (jqxhr.status >= 400) {
+				status = '(HTTP ' + jqxhr.status + ')';
+			}
+			$('#'+this.apiName+' .results').html('<p>Service unavailable. ' + status + '</p>');
+			console.log(this.apiName+' received error', jqxhr, jqstatus, jqerror);
+		}, this),
+		complete:$.proxy(function() {
+			this.busy = false;
+			$('#'+this.apiName+' .loading').hide();
+		}, this)
+	});
 	this.busy = true;
 };
 
@@ -496,9 +514,7 @@ iAPI.prototype.numResults = function(){
 };
 
 iAPI.prototype.callback = function(data){
-	this.busy = false;
 	this.data = data;
-	$('#'+this.apiName+' .loading').hide();
 	console.log(this.apiName+' received callback');
 	//console.log(data);
 	this.parse();
