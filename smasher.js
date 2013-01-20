@@ -493,10 +493,11 @@ iAPI.prototype.submit = function(query){
 		url: this.endpoint(),
 		success: $.proxy(this.callback, this),
 		error:	$.proxy(function(jqxhr, jqstatus, jqerror) {
-			var status = '';
+			var status = jqstatus;
 			if (jqxhr.status >= 400) {
-				status = '(HTTP ' + jqxhr.status + ')';
+				status = 'HTTP ' + jqxhr.status;
 			}
+			status = '<a href="' + this.endpoint() + '" target="_blank">(' + status + ')</a>';
 			$('#'+this.apiName+' .results').html('<p>Service unavailable. ' + status + '</p>');
 			console.log(this.apiName+' received error', jqxhr, jqstatus, jqerror);
 		}, this),
