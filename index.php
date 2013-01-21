@@ -38,6 +38,7 @@ Date: February 12, 2011
                  Grooveshark, SoundCloud, Bandcamp, MOG, and YouTube."/>
   <link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="<?= $app_path ?>/smasher.css">
+  <link rel="shortcut icon" href="<?= $app_path ?>/favicon.ico">
   <script type="text/javascript">
 
     var _gaq = _gaq || [];
