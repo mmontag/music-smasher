@@ -218,7 +218,12 @@ $(document).ready(function() {
 		rdio.canInstantPlay = function() { return true; };
 
 		rdio.endpoint = function() {
-			return('oauthproxy.php?api=rdio&query=' + this.query);
+			var words = this.query.split(' ');
+			// By default, Rdio matches prefixes; i.e. 'bax' matches 'baxter'.
+			// Quote individual strings in query to force whole-word match.
+			// This assumes quotes in the query have been stripped.
+			var strictRdioQuery = '"' + words.join('" "') + '"';
+			return('oauthproxy.php?api=rdio&query=' + strictRdioQuery);
 		};
 		
 		rdio.parse = function() {
@@ -368,7 +373,6 @@ $(document).ready(function() {
 			youtube.submit(q);
 			lastsearch = q;
 			waiting = true;
-			// TODO: preserve parameter /now
 			appRouter.navigate(q.replace(/[ -]+/g,"-") + (instantListen.enabled ? '/now' : '')); // query to URL (see below)
 		} catch(e) {
 			console.log(e);
