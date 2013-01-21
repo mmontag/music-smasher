@@ -139,11 +139,11 @@
 $enable_jsonp    = false;
 $enable_native   = true;
 $valid_url_regex = '#^http://(www.)?tinysong.com/s/.{0,256}#';
-if( strpos($_SERVER['HTTP_REFERER'], "http://mattmontag.com") === false &&
-	strpos($_SERVER['HTTP_REFERER'], "http://www.mattmontag.com") === false &&
-	strpos($_SERVER['HTTP_REFERER'], "http://musicsmasher.net") === false &&
-	strpos($_SERVER['HTTP_REFERER'], "http://www.musicsmasher.net") === false ) die($_SERVER['HTTP_REFERER'] . ' Invalid');
-	
+if( strpos($_SERVER['HTTP_REFERER'], "http://mattmontag.com/") !== 0 &&
+	strpos($_SERVER['HTTP_REFERER'], "http://www.mattmontag.com/") !==0 &&
+	strpos($_SERVER['HTTP_REFERER'], "http://musicsmasher.net/") !== 0 &&
+	strpos($_SERVER['HTTP_REFERER'], "http://www.musicsmasher.net/") !== 0 &&
+	$_SERVER['HTTP_HOST'] !== "localhost") die($_SERVER['HTTP_REFERER'] . ' Invalid');
 include('keys.php');
 $key = $keys['grooveshark']['key'];
 $url = stripslashes($_GET['url']) . "&key=$key";
