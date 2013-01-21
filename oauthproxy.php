@@ -16,7 +16,8 @@ switch ($_GET['api']) {
 			"method"=>"search", 
 			"query"=>stripslashes($_GET['query']),
 			"types"=>"Track",
-			"count"=>"100",
+      "extras"=>"playCount,globalPlayCount,commentCount,collectionCount,listenerCount",
+			"count"=>"50",
 			"never_or"=>"true"
 			);
 		break;
