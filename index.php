@@ -112,7 +112,12 @@ Date: February 12, 2011
 <script type="text/template" id="tpl-track">
   <li>
     <a href="{{ url }}" data-autoplayurl="{{ autoPlayUrl }}" target="m">{% if (artist) { %}{{ artist }} - {% } %}{{ track }}</a>
+    {% if (popularity !== undefined) { %}
+    <span class="album withPopularity">{{ album }}</span>
+    <span class="popularity"><span class="popularityValue" style="width: {{ popularity }}%"></span></span>
+    {% } else { %}
     <span class="album">{{ album }}</span>
+    {% } %}
   </li>
 </script>
 <script type="text/template" id="tpl-service">

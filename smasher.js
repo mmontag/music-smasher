@@ -31,7 +31,8 @@ $(document).ready(function() {
 					tracks[i].album.name,
 					tracks[i].href,
 					'https://embed.spotify.com/?uri=' + tracks[i].href,
-					this.apiName
+					this.apiName,
+					tracks[i].popularity * 100
 				));
 			}
 		};
@@ -247,7 +248,7 @@ $(document).ready(function() {
 
 		youtube.embedHeight = '196px';
 
-		youtube.maxResults = 20;
+		youtube.maxResults = 50;
 
 		youtube.note = "YouTube will return a maximum of " + youtube.maxResults + " results.";
 
@@ -438,13 +439,14 @@ $(document).ready(function() {
 
 });
 
-function Track(artist, track, album, url, autoPlayUrl, apiName) {
+function Track(artist, track, album, url, autoPlayUrl, apiName, popularity) {
 	this.artist = artist || '';
 	this.track = track || '';
 	this.album = album || '';
 	this.url = url || '';
 	this.autoPlayUrl = autoPlayUrl || '';
 	this.apiName = apiName;
+	this.popularity = popularity;
 }
 
 function iAPI(name, nicename, url){
