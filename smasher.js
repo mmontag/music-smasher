@@ -52,7 +52,13 @@ $(document).ready(function() {
 		mog.endpoint = function() {
 			// By default, MOG matches with a liberal soundex.
 			// Quote every search term to avoid extra matches.
-			var strictQuery = this.strictQuotedQuery(this.query);
+			// Oops, just quote single-word searches. MOG only matches the track name on quoted strings.
+			var strictQuery;
+			if (this.query.split(' ').length > 1) {
+			  strictQuery = this.query;
+			} else {
+				strictQuery = this.strictQuotedQuery(this.query);
+			}
 			return('http://search.mog.com/v2/tracks/search.json?q=' + strictQuery + '&count=50&index=0&allow_nonstreamable_token=0');
 		};
 		
@@ -227,6 +233,17 @@ $(document).ready(function() {
 			var strictQuery = this.strictQuotedQuery(this.query);
 			return('oauthproxy.php?api=rdio&query=' + strictQuery);
 		};
+
+		rdio.getPopularity = function(playCount) {
+			var ceiling = 500000; // 500k plays ~ 100% popularity for an Rdio track as of Jan 2013
+														// unfortunately, this measure doesn't have recency
+			var skewness = 0.5; // weighted between log scale and linear scale
+			var a = Math.min(Math.log(playCount + 1) / Math.log(ceiling), 1);
+			var b = Math.min((playCount + 1)/ceiling, 1);
+			var popularity = (100 * (skewness * b + (1 - skewness) * a));
+			console.log("playCount: %d, a: %f, b: %f, popularity: %f", playCount, a, b, popularity);
+			return popularity;
+		};
 		
 		rdio.parse = function() {
 			var tracks = this.data.result.results;
@@ -239,7 +256,8 @@ $(document).ready(function() {
 						tracks[i].album,
 						tracks[i].shortUrl,
 						tracks[i].embedUrl + '?autoplay',
-						this.apiName
+						this.apiName,
+						this.getPopularity(tracks[i].globalPlayCount)
 					));
 				}
 			}
