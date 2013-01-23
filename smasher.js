@@ -358,7 +358,7 @@ $(document).ready(function() {
 		$('body').addClass('resulting')
 
 		// Don't duplicate search
-		if(q == lastsearch) {
+		if(q == lastsearch && !instantListen.enabled) {
 			console.log("cancelling repeat search");
 			return false;
 		}
@@ -399,8 +399,8 @@ $(document).ready(function() {
 	$('#q').keydown(function(event) {
 		if (event.keyCode == '13') {
 			instantListen.enabled = event.shiftKey ? true : false;
-			event.stopPropagation();
 			$('#qform').submit();
+			event.stopPropagation();
 		}
 	});
 	Player.init();
@@ -584,11 +584,12 @@ var instantListen = {
 	setQuery: function(query) {
 		this._complete = false;
 		this._query = query;
+		this._allItems = [];
 	},
 
 	notify: function(tracks) {
 		// If already found a match, ignore subsequent callbacks until new query
-		if (this._complete) {
+		if (this._complete || !this.enabled) {
 			return;
 		}
 
@@ -607,7 +608,7 @@ var instantListen = {
 	},
 
 	notifyDone: function() {
-		if (this._complete) {
+		if (this._complete || !this.enabled) {
 			return;
 		}
 		for(var i = 0; i < this._allItems.length; i++) {
