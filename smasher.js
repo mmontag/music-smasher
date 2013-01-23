@@ -50,7 +50,10 @@ $(document).ready(function() {
 		};
 	
 		mog.endpoint = function() {
-			return('http://search.mog.com/v2/tracks/search.json?q=' + this.query + '&count=50&index=0&allow_nonstreamable_token=0');
+			// By default, MOG matches with a liberal soundex.
+			// Quote every search term to avoid extra matches.
+			var strictQuery = this.strictQuotedQuery(this.query);
+			return('http://search.mog.com/v2/tracks/search.json?q=' + strictQuery + '&count=50&index=0&allow_nonstreamable_token=0');
 		};
 		
 		mog.parse = function() {
@@ -219,12 +222,10 @@ $(document).ready(function() {
 		rdio.canInstantPlay = function() { return true; };
 
 		rdio.endpoint = function() {
-			var words = this.query.split(' ');
 			// By default, Rdio matches prefixes; i.e. 'bax' matches 'baxter'.
-			// Quote individual strings in query to force whole-word match.
-			// This assumes quotes in the query have been stripped.
-			var strictRdioQuery = '"' + words.join('" "') + '"';
-			return('oauthproxy.php?api=rdio&query=' + strictRdioQuery);
+			// Quote individual words in query to force whole-word match.
+			var strictQuery = this.strictQuotedQuery(this.query);
+			return('oauthproxy.php?api=rdio&query=' + strictQuery);
 		};
 		
 		rdio.parse = function() {
@@ -561,6 +562,13 @@ iAPI.prototype.updateDOM = function(){
 		ul.append(li);
 	}
 	$('#'+this.apiName+' .results').html(ul);
+};
+
+iAPI.prototype.strictQuotedQuery = function(query) {
+	// This assumes quotes in the query have been stripped.
+	var words = query.split(' ');
+	var quotedQuery = '"' + words.join('" "') + '"';
+	return quotedQuery;
 };
 
 iAPI.prototype.canInstantPlay = function(){};
