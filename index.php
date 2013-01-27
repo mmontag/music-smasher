@@ -68,9 +68,6 @@ Date: February 12, 2011
       </a></h1>
       <div class="tagline">Find Any Song.</div>
       <input id="q"/>
-      <div class="tip">
-          Olá aos visitantes no Brasil!
-      </div>
       <? if(rand(0, 10) < 3) { ?>
       <div class="warning">
         Caution: Strange experiments are currently taking place at Music Smasher... :)
