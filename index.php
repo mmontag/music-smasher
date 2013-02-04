@@ -68,10 +68,11 @@ Date: February 12, 2011
       </a></h1>
       <div class="tagline">Find Any Song.</div>
       <input id="q"/>
-      <? if(rand(0, 10) < 3) { ?>
-      <div class="warning">
-        Caution: Strange experiments are currently taking place at Music Smasher... :)
-      </div>
+      <? if(rand(0, 10) < 5) {
+//      <div class="warning">
+//        Caution: Strange experiments are currently taking place at Music Smasher... :)
+//      </div>
+      ?>
       <? } else { ?>
       <div class="tip">
         Hot Tip! Use Shift+Enter to search if you're feeling lucky.
