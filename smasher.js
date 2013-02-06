@@ -80,23 +80,25 @@ $(document).ready(function() {
 		
 	var soundcloud = new iAPI('soundcloud', 'SoundCloud', 'http://www.soundcloud.com');
 	
-		// Hello, curious hacker person. Wouldn't it be easy to steal this API key and do Evil Things?
-		// Why yes, and it would also be fairly easy to burn your neighbor's house down. I trust that you won't do these things.
-		// Music Smasher is fast because most of the API requests are sent directly to the service provider, instead of first
-		// going through a proxy in order to hide an API key. Let's keep it that way!
+	// Hello, curious hacker person. Wouldn't it be easy to steal this API key and do Evil Things?
+	// Why yes, and it would also be fairly easy to burn your neighbor's house down. I trust that you won't do these things.
+	// Music Smasher is fast because most of the API requests are sent directly to the service provider, instead of first
+	// going through a proxy in order to hide an API key. Let's keep it that way!
 
-		soundcloud.canInstantPlay = function() { return true; };
-		
-		soundcloud.endpoint = function() {
-			return('http://api.soundcloud.com/tracks.json?q=' + this.query + '&client_id=f7def983532e3e44229d757cdab43cbe');
-		};
+	soundcloud.canInstantPlay = function() { return true; };
 
-		soundcloud.autoPlayUrl = function(id) {
-			return "http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F" +
-				id + "&amp;color=ff6600&amp;auto_play=true&amp;show_artwork=true";
-		};
-		
-		soundcloud.parse = function() {
+	soundcloud.endpoint = function() {
+		return('http://api.soundcloud.com/tracks.json?q=' + this.query + '&client_id=f7def983532e3e44229d757cdab43cbe');
+	};
+
+	soundcloud.autoPlayUrl = function(id) {
+		return "http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F" +
+			id + "&amp;color=ff6600&amp;auto_play=true&amp;show_artwork=true";
+	};
+
+	soundcloud.playCountCeiling = 400000;
+
+	soundcloud.parse = function() {
 			var tracks = this.data;
 			for(var i = 0; i < tracks.length; i++) {
 				// SouncCloud has some messy data.
@@ -121,7 +123,8 @@ $(document).ready(function() {
 					albumish,
 					tracks[i].permalink_url,
 					this.autoPlayUrl(tracks[i].id),
-					this.apiName
+					this.apiName,
+					this.getPopularity(tracks[i].playback_count)
 				));
 			}
 		};
@@ -234,17 +237,8 @@ $(document).ready(function() {
 			return('oauthproxy.php?api=rdio&query=' + strictQuery);
 		};
 
-		rdio.getPopularity = function(playCount) {
-			var ceiling = 500000; // 500k plays ~ 100% popularity for an Rdio track as of Jan 2013
-														// unfortunately, this measure doesn't have recency
-			var skewness = 0.5; // weighted between log scale and linear scale
-			var a = Math.min(Math.log(playCount + 1) / Math.log(ceiling), 1);
-			var b = Math.min((playCount + 1)/ceiling, 1);
-			var popularity = (100 * (skewness * b + (1 - skewness) * a));
-			console.log("playCount: %d, a: %f, b: %f, popularity: %f", playCount, a, b, popularity);
-			return popularity;
-		};
-		
+		rdio.playCountCeiling = 500000; // 500k plays ~ 100% popularity for an Rdio track as of Jan 2013
+
 		rdio.parse = function() {
 			var tracks = this.data.result.results;
 			for(var i = 0; i < tracks.length; i++) {
@@ -271,6 +265,8 @@ $(document).ready(function() {
 
 		youtube.note = "YouTube will return a maximum of " + youtube.maxResults + " results.";
 
+		youtube.playCountCeiling = 50000000;
+
 		youtube.canInstantPlay = function() { return true; };
 		
 		youtube.numResults = function(){
@@ -295,7 +291,8 @@ $(document).ready(function() {
 						video.media$group.media$description.$t,
 						'http://www.youtube.com/watch?v=' + videoId,
 						'http://www.youtube.com/embed/' + videoId + '?autoplay=1',
-						this.apiName
+						this.apiName,
+						this.getPopularity(video.yt$statistics.viewCount)
 					));
 				}
 			}
@@ -587,6 +584,17 @@ iAPI.prototype.strictQuotedQuery = function(query) {
 	var words = query.split(' ');
 	var quotedQuery = '"' + words.join('" "') + '"';
 	return quotedQuery;
+};
+
+iAPI.prototype.playCountCeiling = 500000;
+
+iAPI.prototype.getPopularity = function(playCount) {
+	var skewness = 0.5; // weighted between log scale and linear scale
+	var a = Math.min(Math.log(playCount + 1) / Math.log(this.playCountCeiling), 1);
+	var b = Math.min((playCount + 1)/this.playCountCeiling, 1);
+	var popularity = (100 * (skewness * b + (1 - skewness) * a));
+	//console.log("playCount: %d, a: %f, b: %f, popularity: %f", playCount, a, b, popularity);
+	return popularity;
 };
 
 iAPI.prototype.canInstantPlay = function(){};
