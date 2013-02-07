@@ -44,8 +44,7 @@ Date: February 12, 2011
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-25089589-2']);
     _gaq.push(['_setAllowLinker', true]);
-    // Disabled to prevent duplicate tracking - see https://github.com/kendagriff/backbone.analytics
-    //_gaq.push(['_trackPageview']);
+    _gaq.push(['_trackPageview']);
 
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
