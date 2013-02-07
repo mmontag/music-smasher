@@ -530,10 +530,12 @@ iAPI.prototype.submit = function(query){
 	instantListen.setQuery(query);
 
 	this.items = [];
-	$('#'+this.apiName+' .note').hide();
-	$('#'+this.apiName+' .loading').show();
-	$('#'+this.apiName+' .results').empty();
-	$('#'+this.apiName+' .num-results').empty();
+	var $el = $('#'+this.apiName);
+	$el.find('.note').hide();
+	$el.find('.loading').show();
+	$el.find('.results').empty();
+	$el.find('.num-results').empty();
+	$el.find('.toggleMore').hide();
 	if(this.busy === true) {
 		console.log('hanging up on ajax call for '+this.apiName);
 		this.ajax.abort();
@@ -550,12 +552,12 @@ iAPI.prototype.submit = function(query){
 				status = 'HTTP ' + jqxhr.status;
 			}
 			status = '<a href="' + this.endpoint() + '" target="_blank">(' + status + ')</a>';
-			$('#'+this.apiName+' .results').html('<p>Service unavailable. ' + status + '</p>');
+			$el.find('.results').html('<p>Service unavailable. ' + status + '</p>');
 			console.log(this.apiName+' received error', jqxhr, jqstatus, jqerror);
 		}, this),
 		complete:$.proxy(function() {
 			this.busy = false;
-			$('#'+this.apiName+' .loading').hide();
+			$el.find('.loading').hide();
 		}, this)
 	});
 	this.busy = true;
