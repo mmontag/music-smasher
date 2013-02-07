@@ -193,7 +193,29 @@ a, a:visited, a:link {
 
 a:hover {
 	text-decoration: underline;
-}	
+}
+
+.results {
+    overflow: hidden;
+}
+
+.toggleMore {
+    display: none;
+    text-align: center;
+    width: 200px;
+    cursor: pointer;
+    font-size: 100%;
+    margin: 20px auto;
+    text-shadow: 0 1px 0 white, 0 0px 9px #ddd;
+    color: #aaa;
+    background: rgba(0,0,0,0.04);
+    border-radius: 6px;
+    padding: 5px;
+}
+
+.toggleMore:hover {
+    background: rgba(0,0,0,0.06);
+}
 
 .result-list li {
 	list-style: none;

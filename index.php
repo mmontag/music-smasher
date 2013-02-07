@@ -132,6 +132,7 @@ Date: February 12, 2011
     </div>
     <div class="note">{{ note }}</div>
     <div class="results"></div>
+    <div class="toggleMore">More</div>
   </div>
 </script>
 <script type="text/template" id="tpl-playheader">

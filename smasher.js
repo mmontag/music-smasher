@@ -357,9 +357,6 @@ $(document).ready(function() {
 			return live_video;
 		};
 
-	// Set cursor to search box
-	$('#q').focus();
-
 	// Hook form submit action to each API
 	$('#qform').submit(function(event) {
 		event.preventDefault();
@@ -401,11 +398,10 @@ $(document).ready(function() {
 		}
 		return false;
 	});
-	
-	var search = function(query) {
-	
-	};
-	
+
+	// Set cursor to search box
+	$('#q').focus();
+
 	// Create each service result container in DOM
 	// TODO: each service should register itself
 	// TODO: iterate over registered services
@@ -484,16 +480,38 @@ function iAPI(name, nicename, url){
 	this.template = _.template($('#tpl-service').html());
 	this.itemTemplate = _.template($('#tpl-track').html());
 	this.embedHeight = '196px';
+	this.maxTracksCompact = 15;
+	this.trackRowHeight = 23;
 }
 
 iAPI.prototype.addToDOM = function() {
 	var html = this.template(this);
 	$('#services').append(html);
 
-	$('#'+this.apiName+' .refresh').click($.proxy(function(event) {
+	var $el = $('#'+this.apiName);
+	var $results = $el.find('.results');
+	var $toggleMore = $el.find('.toggleMore');
+	var compact = true;
+
+	$el.find('.refresh').click($.proxy(function(event) {
 		console.log(this.apiName + ' refresh');
 		this.submit(this.query); // Reuse old query value
 	}, this));
+
+	$el.find('.toggleMore').click($.proxy(function(event) {
+		if (compact) {
+			$results.css('max-height', 'none');
+			$toggleMore.text('Show Less');
+			compact = false;
+		} else {
+			$results.css('max-height', this.maxTracksCompact * this.trackRowHeight + 'px');
+			$toggleMore.text("Show " + (this.numResults() - this.maxTracksCompact) + " more results");
+			compact = true;
+		}
+	}, this));
+
+	// Initial state
+	$toggleMore.text('Show All');
 };
 
 iAPI.prototype.submit = function(query){
@@ -560,7 +578,11 @@ iAPI.prototype.callback = function(data){
 
 // Renders list of items
 iAPI.prototype.updateDOM = function(){
-	$('#'+this.apiName+' .num-results').html(this.numResults() + ' Results');
+	var $el = $('#'+this.apiName);
+	var $results = $el.find('.results');
+	var $toggleMore = $el.find('.toggleMore');
+
+	$el.find('.num-results').html(this.numResults() + ' Results');
 
 	var ul = $('<ul class="result-list"></ul>');
 	for(var i = 0, length = this.items.length; i < length; i++) {
@@ -581,7 +603,14 @@ iAPI.prototype.updateDOM = function(){
 		// add to dom fragment
 		ul.append(li);
 	}
-	$('#'+this.apiName+' .results').html(ul);
+	$results.html(ul);
+	if ($results.height() < this.trackRowHeight * this.maxTracksCompact) {
+		$toggleMore.hide();
+	} else {
+		$results.css('max-height', this.trackRowHeight * this.maxTracksCompact);
+		$toggleMore.show();
+		$toggleMore.text("Show " + (this.numResults() - this.maxTracksCompact) + " more results");
+	}
 };
 
 iAPI.prototype.strictQuotedQuery = function(query) {
