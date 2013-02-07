@@ -48,6 +48,10 @@ $(document).ready(function() {
 		mog.numResults = function() {
 			return this.items.length;
 		};
+
+		mog.playCountCeiling = 400; // Who knows. Macklemore/Thrift Shop has 631.28.
+
+		mog.playCountSkewness = 0.1; // Closer to log
 	
 		mog.endpoint = function() {
 			// By default, MOG matches with a liberal soundex.
@@ -73,7 +77,8 @@ $(document).ready(function() {
 					tracks[i].album_name,
 					"http://mog.com/tracks/mn" + tracks[i].track_id,
 					null,
-					this.apiName
+					this.apiName,
+					this.getPopularity(tracks[i].popularity)
 				));
 			}
 		};
@@ -588,11 +593,12 @@ iAPI.prototype.strictQuotedQuery = function(query) {
 
 iAPI.prototype.playCountCeiling = 500000;
 
+iAPI.prototype.playCountSkewness = 0.5; // 0 = log, 1 = linear
+
 iAPI.prototype.getPopularity = function(playCount) {
-	var skewness = 0.5; // weighted between log scale and linear scale
 	var a = Math.min(Math.log(playCount + 1) / Math.log(this.playCountCeiling), 1);
 	var b = Math.min((playCount + 1)/this.playCountCeiling, 1);
-	var popularity = (100 * (skewness * b + (1 - skewness) * a));
+	var popularity = (100 * (this.playCountSkewness * b + (1 - this.playCountSkewness) * a));
 	//console.log("playCount: %d, a: %f, b: %f, popularity: %f", playCount, a, b, popularity);
 	return popularity;
 };
