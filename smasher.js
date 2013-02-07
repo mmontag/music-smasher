@@ -265,7 +265,7 @@ $(document).ready(function() {
 
 		youtube.note = "YouTube will return a maximum of " + youtube.maxResults + " results.";
 
-		youtube.playCountCeiling = 50000000;
+		youtube.playCountCeiling = 250000000; // 250 million views = 100% popularity
 
 		youtube.canInstantPlay = function() { return true; };
 		
