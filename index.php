@@ -44,6 +44,7 @@ Date: February 12, 2011
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-25089589-2']);
     _gaq.push(['_setAllowLinker', true]);
+    _gaq.push(['_setDomainName', 'musicsmasher.net']);
     _gaq.push(['_trackPageview']);
 
     (function() {
