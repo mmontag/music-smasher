@@ -244,6 +244,10 @@ $(document).ready(function() {
 
 		rdio.playCountCeiling = 500000; // 500k plays ~ 100% popularity for an Rdio track as of Jan 2013
 
+		rdio.affiliateEmbedSuffix = '&linkshare_id=m9ZkWWoIR/Y&linkshare_subid=&linkshare_offerid=221756.1&linkshare_type=10&linkshare_tmpid=7950';
+
+		rdio.affiliateLinkPrefix = 'http://click.linksynergy.com/fs-bin/click?id=m9ZkWWoIR/Y&subid=&offerid=221756.1&type=10&tmpid=7950&RD_PARM1=';
+
 		rdio.parse = function() {
 			var tracks = this.data.result.results;
 			for(var i = 0; i < tracks.length; i++) {
@@ -253,8 +257,8 @@ $(document).ready(function() {
 						tracks[i].artist,
 						tracks[i].name,
 						tracks[i].album,
-						tracks[i].shortUrl,
-						tracks[i].embedUrl + '?autoplay',
+						this.affiliateLinkPrefix + encodeURI(tracks[i].shortUrl),
+						tracks[i].embedUrl + '?autoplay' + this.affiliateEmbedSuffix,
 						this.apiName,
 						this.getPopularity(tracks[i].globalPlayCount)
 					));
