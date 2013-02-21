@@ -1,0 +1,38 @@
+{
+  "header": {
+    "client": "htmlshark",
+    "clientRevision": "20120830",
+    "privacy": 0,
+    "country": {
+      "ID": 223,
+      "CC1": 0,
+      "CC2": 0,
+      "CC3": 0,
+      "CC4": 1073741824,
+      "DMA": 807,
+      "IPR": 0
+    },
+    "uuid": "B7B73F1E-2B0F-4B03-8F19-6752AAB5E2DC",
+    "session": "906af2942c49ef834f8b482d56d52491",
+    "token": "e68817eee44685dbfadde1e00fdb9a0ab41cbb15752d5e"
+  },
+  "method": "getResultsFromSearch",
+  "parameters": {
+    "query": "digitales kontakte",
+    "type": [
+      "Songs",
+      "Artists",
+      "Albums"
+    ],
+    "guts": 0,
+    "ppOverride": false
+  }
+}
+
+http://grooveshark.com/more.php?getResultsFromSearch&method=getResultsFromSearch&header={"client":"htmlshark","clientRevision":"20120830","uuid":"B7B73F1E-2B0F-4B03-8F19-6752AAB5E2DC","token":"e68817eee44685dbfadde1e00fdb9a0ab41cbb15752d5e"}&parameters={"query":"digitales vivrendi","type":"Songs"}
+
+https://grooveshark.com/more.php?method=getCommunicationToken&header={"client":"htmlshark","clientRevision":"20120830","uuid":"B7B73F1E-2B0F-4B03-8F19-6752AAB5E2DC"}&parameters={"secretKey":"263992877fed201a20d4806a648caa78"}
+
+http://grooveshark.com/more.php?getResultsFromSearch&method=getResultsFromSearch&header={"client":"htmlshark","clientRevision":"20120830","uuid":"B7B73F1E-2B0F-4B03-8F19-6752AAB5E2DC","token":"50fd1788ce791"}&parameters={"query":"digitales vivrendi","type":"Songs"}
+
+50fd1788ce791

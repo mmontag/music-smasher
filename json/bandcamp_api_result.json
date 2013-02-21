@@ -1,0 +1,100 @@
+{
+  "small_art_url": "http://f0.bcbits.com/z/20/42/2042569080-1.jpg",
+  "release_date": 378691200,
+  "downloadable": 2,
+  "tracks": [
+    {
+      "number": 1,
+      "downloadable": 2,
+      "duration": 266.68,
+      "track_id": 3725723137,
+      "url": "/track/i-just-want-one?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=96463cde6697b2c63eabe2123b3f5b30&id=3725723137&pk=274&stream=1&ts=1358040167.0",
+      "title": "I Just Want One",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    },
+    {
+      "number": 2,
+      "downloadable": 2,
+      "duration": 305.187,
+      "track_id": 4238756533,
+      "url": "/track/my-grandmas-eyes?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=ba07e2e613b2c6cfa8733e2cc2a0feb7&id=4238756533&pk=274&stream=1&ts=1358040167.0",
+      "title": "My Grandma's Eyes",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    },
+    {
+      "number": 3,
+      "downloadable": 2,
+      "duration": 301.373,
+      "track_id": 3986784719,
+      "url": "/track/michael-in-my-hand?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=2b8cf3086aaa8c20df87e63790a4600f&id=3986784719&pk=274&stream=1&ts=1358040167.0",
+      "title": "Michael In My Hand",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    },
+    {
+      "number": 4,
+      "downloadable": 2,
+      "duration": 175.344,
+      "track_id": 2585776529,
+      "url": "/track/like-a-dandelion?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=7b70cf053da7d7b253726c0ce8401b63&id=2585776529&pk=274&stream=1&ts=1358040167.0",
+      "title": "Like a Dandelion",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    },
+    {
+      "number": 5,
+      "downloadable": 2,
+      "duration": 254.738,
+      "track_id": 614242480,
+      "url": "/track/uncle-john?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=05489d811b1063b83e96c6cc43dce9ad&id=614242480&pk=274&stream=1&ts=1358040167.0",
+      "title": "Uncle John",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    },
+    {
+      "number": 6,
+      "downloadable": 2,
+      "duration": 203.16,
+      "track_id": 2538547828,
+      "url": "/track/grenada-girl?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=6029fbb21e24baa168caae684bc23c9a&id=2538547828&pk=274&stream=1&ts=1358040167.0",
+      "title": "Grenada Girl",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    },
+    {
+      "number": 7,
+      "downloadable": 2,
+      "duration": 318.04,
+      "track_id": 1624101040,
+      "url": "/track/granada?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=5ac45f9619d2c2318dbe63f9e0ba9061&id=1624101040&pk=274&stream=1&ts=1358040167.0",
+      "title": "Granada",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    },
+    {
+      "number": 8,
+      "downloadable": 2,
+      "duration": 397.6,
+      "track_id": 299660016,
+      "url": "/track/an-august-in-forest-city?pk=274",
+      "streaming_url": "http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=0faf8d3ab1df903d3c7b9f7f212948af&id=299660016&pk=274&stream=1&ts=1358040167.0",
+      "title": "An August in Forest City",
+      "album_id": 3332559863,
+      "band_id": 3003036149
+    }
+  ],
+  "url": "http://carolmontag.bandcamp.com/album/song-for-carrie?pk=274",
+  "large_art_url": "http://f0.bcbits.com/z/38/49/384946016-1.jpg",
+  "title": "Song for Carrie",
+  "band_id": 3003036149,
+  "album_id": 3332559863
+}
