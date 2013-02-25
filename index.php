@@ -82,9 +82,11 @@ Date: February 12, 2011
         <img src="images/logos_white_retina.png">
       </div>
       <div class="details">
-        <a href="http://www.mattmontag.com/music/music-smasher-streaming-music-api-mashup">Feedback</a> - 
+        <a href="http://www.mattmontag.com/music/music-smasher-streaming-music-api-mashup">Feedback</a> &nbsp;
         
-        <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.musicsmasher.net%2F&amp;send=false&amp;layout=button_count&amp;width=85&amp;show_faces=false&amp;action=like&amp;colorscheme=dark&amp;font=lucida+grande&amp;height=21&amp;appId=132115193511995" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px; vertical-align: bottom;" allowTransparency="true"></iframe>
+		    <iframe allowtransparency="true" frameborder="0" scrolling="no" src="http://platform.twitter.com/widgets/follow_button.1360972506.html#_=1361790528331&amp;id=twitter-widget-0&amp;lang=en&amp;screen_name=matthewmontag&amp;show_count=false&amp;show_screen_name=false&amp;size=m" class="twitter-follow-button twitter-follow-button" style="width: 60px; height: 20px;vertical-align: middle;" title="Twitter Follow Button" data-twttr-rendered="true"></iframe> &nbsp;
+
+        <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.musicsmasher.net%2F&amp;send=false&amp;layout=button_count&amp;width=85&amp;show_faces=false&amp;action=like&amp;colorscheme=dark&amp;font=lucida+grande&amp;height=20&amp;appId=132115193511995" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:20px; vertical-align: middle;" allowTransparency="true"></iframe>
 
         <input type="checkbox" id="us" name="us" checked /> US Catalog Only
       </div>
